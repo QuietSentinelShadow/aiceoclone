@@ -1227,13 +1227,13 @@ const SCENE_DURATION = 8 * FPS; // 240 frames = 8 seconds per scene
 export const Professional: React.FC = () => {
   const scenes: { component: React.FC; audio: string }[] = [
     { component: TitleScene, audio: "audio/professional/pro-01-intro.mp3" },
-    { component: ArchitectureScene, audio: "audio/professional/pro-02-architecture.mp3" },
+    { component: ArchitectureScene, audio: "audio/professional/pro-02-arch.mp3" },
     { component: SetupScene, audio: "audio/professional/pro-03-setup.mp3" },
     { component: ProviderGridScene, audio: "audio/professional/pro-04-providers.mp3" },
     { component: MemoryScene, audio: "audio/professional/pro-05-memory.mp3" },
     { component: SecurityScene, audio: "audio/professional/pro-06-security.mp3" },
-    { component: BenchmarkScene, audio: "audio/professional/pro-07-benchmark.mp3" },
-    { component: ConfigScene, audio: "audio/professional/pro-08-config.mp3" },
+    { component: BenchmarkScene, audio: "audio/professional/pro-07-comparison.mp3" },
+    { component: ConfigScene, audio: "audio/professional/pro-08-advanced.mp3" },
     { component: CeoCloneScene, audio: "audio/professional/pro-09-ceo.mp3" },
     { component: OutroScene, audio: "audio/professional/pro-10-outro.mp3" },
   ];

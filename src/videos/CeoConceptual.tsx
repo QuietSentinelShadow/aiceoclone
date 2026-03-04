@@ -827,7 +827,7 @@ export const CeoConceptual: React.FC = () => {
       {/* Scene 2: Definition */}
       <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
         <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-02-definition.mp3")}
+          src={staticFile("audio/ceo-conceptual/ceo-c-02-what.mp3")}
         />
         <DefinitionScene />
       </Sequence>
@@ -843,7 +843,7 @@ export const CeoConceptual: React.FC = () => {
       {/* Scene 4: How It Works */}
       <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
         <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-04-how-it-works.mp3")}
+          src={staticFile("audio/ceo-conceptual/ceo-c-04-how.mp3")}
         />
         <HowItWorksScene />
       </Sequence>
@@ -851,7 +851,7 @@ export const CeoConceptual: React.FC = () => {
       {/* Scene 5: Use Cases */}
       <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
         <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-05-use-cases.mp3")}
+          src={staticFile("audio/ceo-conceptual/ceo-c-05-usecases.mp3")}
         />
         <UseCasesScene />
       </Sequence>

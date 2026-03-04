@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync, existsSync, statSync } from "fs";
 import { join } from "path";
 
 const AUDIO_DIR = join(__dirname, "..", "src", "audio");
@@ -17,13 +17,13 @@ interface VideoNarration {
   segments: NarrationSegment[];
 }
 
-// Voice presets
+// Voice presets (verified against edge-tts --list-voices)
 const VOICES = {
-  friendly: "en-US-JennyNeural",       // 5-year-old: warm, friendly
-  professional: "en-US-GuyNeural",      // Professional: clear, authoritative
-  energetic: "en-US-AriaNeural",        // Influencer: energetic
-  narrator: "en-US-DavisNeural",        // CEO conceptual: calm narrator
-  tutorial: "en-US-JasonNeural",        // Tutorial: step-by-step
+  friendly: "en-US-JennyNeural",          // 5-year-old: warm, friendly
+  professional: "en-US-GuyNeural",        // Professional: clear, authoritative
+  energetic: "en-US-AriaNeural",          // Influencer: energetic
+  narrator: "en-US-ChristopherNeural",    // CEO conceptual: reliable, authority
+  tutorial: "en-US-BrianNeural",          // Tutorial: approachable, casual, sincere
 };
 
 const allVideos: VideoNarration[] = [
@@ -340,23 +340,37 @@ const allVideos: VideoNarration[] = [
   },
 ];
 
-function generateAudio(segment: NarrationSegment, outputDir: string): void {
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function generateAudio(segment: NarrationSegment, outputDir: string): Promise<void> {
   const outputPath = join(outputDir, `${segment.id}.mp3`);
-  if (existsSync(outputPath)) {
+  if (existsSync(outputPath) && statSync(outputPath).size > 0) {
     console.log(`  [skip] ${segment.id} (already exists)`);
     return;
   }
 
-  let cmd = `edge-tts --voice "${segment.voice}" --text "${segment.text.replace(/"/g, '\\"')}"`;
+  let cmd = `python -m edge_tts --voice "${segment.voice}" --text "${segment.text.replace(/"/g, '\\"')}"`;
   if (segment.rate) cmd += ` --rate="${segment.rate}"`;
   if (segment.pitch) cmd += ` --pitch="${segment.pitch}"`;
   cmd += ` --write-media "${outputPath}"`;
 
-  try {
-    execSync(cmd, { stdio: "pipe" });
-    console.log(`  [done] ${segment.id}`);
-  } catch (err) {
-    console.error(`  [FAIL] ${segment.id}: ${err}`);
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      execSync(cmd, { stdio: "pipe" });
+      console.log(`  [done] ${segment.id}`);
+      return;
+    } catch (err) {
+      if (attempt < maxRetries) {
+        const delay = attempt * 2000;
+        console.log(`  [retry ${attempt}/${maxRetries}] ${segment.id} — waiting ${delay / 1000}s...`);
+        await sleep(delay);
+      } else {
+        console.error(`  [FAIL] ${segment.id} after ${maxRetries} attempts`);
+      }
+    }
   }
 }
 
@@ -369,7 +383,8 @@ async function main() {
     console.log(`\nGenerating audio for: ${video.videoId}`);
 
     for (const segment of video.segments) {
-      generateAudio(segment, videoDir);
+      await generateAudio(segment, videoDir);
+      await sleep(500); // brief pause between requests to avoid rate-limiting
     }
   }
 

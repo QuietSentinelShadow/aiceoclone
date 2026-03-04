@@ -550,6 +550,7 @@ export const FiveYearOld: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
       <Sequence from={0} durationInFrames={sceneDuration}>
+        <Audio src={staticFile("audio/five-year-old/fyo-01-intro.mp3")} />
         <IntroScene />
       </Sequence>
       <Sequence from={sceneDuration} durationInFrames={sceneDuration}>

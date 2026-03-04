@@ -882,7 +882,7 @@ export const Influencer: React.FC = () => {
 
       {/* Scene 3: Dollar */}
       <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-03-dollar.mp3")} />
+        <Audio src={staticFile("audio/influencer/inf-03-board.mp3")} />
         <DollarScene />
       </Sequence>
 
@@ -894,7 +894,7 @@ export const Influencer: React.FC = () => {
 
       {/* Scene 5: Numbers */}
       <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-05-numbers.mp3")} />
+        <Audio src={staticFile("audio/influencer/inf-05-comparison.mp3")} />
         <NumbersScene />
       </Sequence>
 
