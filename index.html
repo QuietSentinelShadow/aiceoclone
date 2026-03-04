@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI CEO Clone — NullClaw Content Suite</title>
+  <meta name="description" content="Build your own AI CEO Clone with NullClaw. Blog, slideshow, and video explainers covering setup, competitor comparison, and advanced autonomous AI configuration." />
+  <meta property="og:title" content="AI CEO Clone — NullClaw Content Suite" />
+  <meta property="og:description" content="Build your own AI CEO Clone with NullClaw. Blog, slideshow, and 6 explainer videos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aiceoclone.amtocbot.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0f',
+            bgLight: '#141422',
+            primary: '#00e5ff',
+            secondary: '#7c4dff',
+            accent: '#ff6d00',
+            card: '#1e1e2e',
+            cardBorder: '#2d2d44',
+          },
+          fontFamily: {
+            heading: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0f; }
+    .glow-cyan { text-shadow: 0 0 30px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15); }
+    .glow-border { box-shadow: 0 0 20px rgba(0,229,255,0.15), inset 0 0 20px rgba(0,229,255,0.05); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,229,255,0.2); border-color: #00e5ff; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    .float { animation: float 4s ease-in-out infinite; }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+    .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+    .stat-bar { transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+  </style>
+</head>
+<body class="font-heading text-white antialiased">
+
+  <!-- Hero -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden px-6">
+    <!-- Background orbs -->
+    <div class="absolute top-20 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl pulse-glow"></div>
+    <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pulse-glow" style="animation-delay: 1.5s"></div>
+
+    <div class="relative z-10 text-center max-w-5xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-card/80 border border-cardBorder rounded-full px-4 py-2 mb-8 text-sm text-gray-400 backdrop-blur">
+        <span class="w-2 h-2 bg-primary rounded-full pulse-glow"></span>
+        Powered by NullClaw — 678 KB AI Assistant
+      </div>
+
+      <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight mb-6">
+        <span class="glow-cyan text-primary">AI CEO</span>
+        <span class="text-white"> Clone</span>
+      </h1>
+
+      <p class="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Build your own autonomous AI CEO using NullClaw. Comprehensive content suite with blog, slideshow, and 6 explainer videos covering setup, competitors, and advanced configuration.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4 mb-16">
+        <a href="./blog/" class="group inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary text-primary px-6 py-3 rounded-xl font-semibold transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          Read the Blog
+          <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+        </a>
+        <a href="./slideshow/" class="group inline-flex items-center gap-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/40 hover:border-secondary text-secondary px-6 py-3 rounded-xl font-semibold transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+          View Slideshow
+          <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+        </a>
+        <a href="https://github.com/QuietSentinelShadow/aiceoclone" target="_blank" class="group inline-flex items-center gap-2 bg-card hover:bg-card/80 border border-cardBorder hover:border-gray-500 text-gray-300 px-6 py-3 rounded-xl font-semibold transition-all">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+          <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+        <div class="bg-card/50 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-2xl sm:text-3xl font-black text-primary">678 KB</div>
+          <div class="text-xs text-gray-500 mt-1">Binary Size</div>
+        </div>
+        <div class="bg-card/50 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-2xl sm:text-3xl font-black text-primary">&lt;2 ms</div>
+          <div class="text-xs text-gray-500 mt-1">Startup Time</div>
+        </div>
+        <div class="bg-card/50 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-2xl sm:text-3xl font-black text-primary">~1 MB</div>
+          <div class="text-xs text-gray-500 mt-1">RAM Usage</div>
+        </div>
+        <div class="bg-card/50 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-2xl sm:text-3xl font-black text-primary">22+</div>
+          <div class="text-xs text-gray-500 mt-1">AI Providers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Cards -->
+  <section class="px-6 py-20 max-w-6xl mx-auto">
+    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4">Content Suite</h2>
+    <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+      Everything you need to understand, set up, and master NullClaw for autonomous AI operations.
+    </p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Blog -->
+      <a href="./blog/" class="bg-card border border-cardBorder rounded-2xl p-6 card-hover block">
+        <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="text-2xl">📝</span>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Blog Article</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Comprehensive guide covering NullClaw setup, competitor comparison (OpenClaw & ZeroClaw), advanced mode, and AI CEO Clone configuration.
+        </p>
+        <div class="mt-4 text-primary text-sm font-semibold">Read article &rarr;</div>
+      </a>
+
+      <!-- Slideshow -->
+      <a href="./slideshow/" class="bg-card border border-cardBorder rounded-2xl p-6 card-hover block">
+        <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="text-2xl">🎯</span>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Slideshow (30 slides)</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Reveal.js presentation with CSS bar charts, architecture diagrams, comparison tables, and CEO Clone workflow visuals.
+        </p>
+        <div class="mt-4 text-secondary text-sm font-semibold">View slides &rarr;</div>
+      </a>
+
+      <!-- Sample Configs -->
+      <a href="https://github.com/QuietSentinelShadow/aiceoclone/tree/master/sample-configs" target="_blank" class="bg-card border border-cardBorder rounded-2xl p-6 card-hover block">
+        <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="text-2xl">&#9881;</span>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Sample Configs</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Ready-to-use NullClaw configurations: basic setup, advanced CEO mode (daemon + cron + autonomy), and Claw-Empire environment templates.
+        </p>
+        <div class="mt-4 text-accent text-sm font-semibold">View on GitHub &rarr;</div>
+      </a>
+    </div>
+
+    <!-- Videos Section -->
+    <h3 class="text-2xl font-bold mt-16 mb-8 text-center">
+      <span class="text-primary">6</span> Explainer Videos
+    </h3>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">🧒</span>
+          <div>
+            <div class="font-semibold">Five-Year-Old</div>
+            <div class="text-xs text-gray-500">40 sec &middot; Simple analogies</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">Fun, kid-friendly explanation with emoji-filled animations and lemonade stand analogies.</p>
+      </div>
+
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">👨‍💻</span>
+          <div>
+            <div class="font-semibold">Software Professional</div>
+            <div class="text-xs text-gray-500">80 sec &middot; Technical deep-dive</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">vtable architecture, benchmarks, config.json deep-dive, security model, and code walkthroughs.</p>
+      </div>
+
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">🔥</span>
+          <div>
+            <div class="font-semibold">Influencer Style</div>
+            <div class="text-xs text-gray-500">35 sec &middot; High energy</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">Slam-zoom animations, bold comparisons, and hype-driven CTA. "678 KB — SMALLER than a JPEG!"</p>
+      </div>
+
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">💡</span>
+          <div>
+            <div class="font-semibold">CEO Clone: Conceptual</div>
+            <div class="text-xs text-gray-500">48 sec &middot; Visionary</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">What is an AI CEO clone? Why NullClaw? Use cases, flowcharts, and the autonomous leadership concept.</p>
+      </div>
+
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">🛠️</span>
+          <div>
+            <div class="font-semibold">CEO Clone: NullClaw Advanced</div>
+            <div class="text-xs text-gray-500">70 sec &middot; Tutorial</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">Step-by-step daemon + cron + full autonomy setup, channel config, memory system, and verification.</p>
+      </div>
+
+      <div class="bg-card/60 border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">🏢</span>
+          <div>
+            <div class="font-semibold">CEO Clone: Claw-Empire</div>
+            <div class="text-xs text-gray-500">70 sec &middot; Advanced</div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm">Full AI company orchestration with departments, CEO directives, Kanban, KPIs, and pixel-art office.</p>
+      </div>
+    </div>
+
+    <p class="text-center text-gray-500 text-sm mt-8">
+      Videos built with <a href="https://www.remotion.dev" class="text-primary hover:underline">Remotion</a> + Edge-TTS. Clone the repo and run <code class="bg-card px-2 py-1 rounded text-xs font-mono">npm run preview</code> to view in Remotion Studio.
+    </p>
+  </section>
+
+  <!-- Comparison Section -->
+  <section class="px-6 py-16 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold text-center mb-8">NullClaw vs The Competition</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-cardBorder">
+            <th class="text-left py-3 px-4 text-gray-500 font-medium">Metric</th>
+            <th class="py-3 px-4 text-primary font-bold">NullClaw</th>
+            <th class="py-3 px-4 text-[#7c4dff] font-bold">ZeroClaw</th>
+            <th class="py-3 px-4 text-accent font-bold">OpenClaw</th>
+          </tr>
+        </thead>
+        <tbody class="text-center">
+          <tr class="border-b border-cardBorder/50">
+            <td class="text-left py-3 px-4 text-gray-400">Language</td>
+            <td class="py-3 px-4">Zig</td>
+            <td class="py-3 px-4">Rust</td>
+            <td class="py-3 px-4">TypeScript</td>
+          </tr>
+          <tr class="border-b border-cardBorder/50">
+            <td class="text-left py-3 px-4 text-gray-400">Binary Size</td>
+            <td class="py-3 px-4 text-primary font-bold">678 KB</td>
+            <td class="py-3 px-4">3.4 MB</td>
+            <td class="py-3 px-4">~28 MB</td>
+          </tr>
+          <tr class="border-b border-cardBorder/50">
+            <td class="text-left py-3 px-4 text-gray-400">RAM</td>
+            <td class="py-3 px-4 text-primary font-bold">~1 MB</td>
+            <td class="py-3 px-4">&lt;5 MB</td>
+            <td class="py-3 px-4">1 GB+</td>
+          </tr>
+          <tr class="border-b border-cardBorder/50">
+            <td class="text-left py-3 px-4 text-gray-400">Startup</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;2 ms</td>
+            <td class="py-3 px-4">&lt;10 ms</td>
+            <td class="py-3 px-4">Seconds</td>
+          </tr>
+          <tr>
+            <td class="text-left py-3 px-4 text-gray-400">Security</td>
+            <td class="py-3 px-4 text-xs">ChaCha20 + Landlock</td>
+            <td class="py-3 px-4 text-xs">Workspace scoping</td>
+            <td class="py-3 px-4 text-xs text-red-400">CVE-2026-25253</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-cardBorder px-6 py-12">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-sm text-gray-500">
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/nullclaw/nullclaw" target="_blank" class="hover:text-primary transition-colors">NullClaw GitHub</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://nullclaw.org" target="_blank" class="hover:text-primary transition-colors">nullclaw.org</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://github.com/QuietSentinelShadow/aiceoclone" target="_blank" class="hover:text-primary transition-colors">Source Code</a>
+      </div>
+      <div>Built by <a href="https://github.com/QuietSentinelShadow" target="_blank" class="hover:text-primary transition-colors">AMTOC</a></div>
+    </div>
+  </footer>
+
+</body>
+</html>

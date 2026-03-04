@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NullClaw — The 678 KB AI Revolution</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
+  <style>
+    :root {
+      --cyan: #00e5ff;
+      --purple: #7c4dff;
+      --orange: #ff6d00;
+      --bg: #0a0a0f;
+      --code-bg: #12121a;
+      --green: #00e676;
+      --red: #ff1744;
+      --dimmed: #8892b0;
+    }
+
+    .reveal-viewport {
+      background: var(--bg);
+    }
+
+    .reveal {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal h1 { font-size: 2.4em; }
+    .reveal h2 { font-size: 1.8em; color: #fff; }
+    .reveal h3 { font-size: 1.3em; color: var(--cyan); }
+
+    .reveal p, .reveal li {
+      font-size: 0.85em;
+      line-height: 1.6;
+      color: #ccd6f6;
+    }
+
+    .reveal ul { list-style: none; padding-left: 0; }
+    .reveal ul li::before {
+      content: "▸ ";
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    /* Cyan glow */
+    .glow {
+      color: var(--cyan);
+      text-shadow:
+        0 0 10px rgba(0,229,255,0.5),
+        0 0 30px rgba(0,229,255,0.3),
+        0 0 60px rgba(0,229,255,0.15);
+    }
+
+    .glow-purple {
+      color: var(--purple);
+      text-shadow:
+        0 0 10px rgba(124,77,255,0.5),
+        0 0 30px rgba(124,77,255,0.3);
+    }
+
+    .subtitle {
+      color: var(--dimmed);
+      font-size: 0.7em !important;
+      margin-top: 0.5em;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 2em;
+      margin: 1.5em 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 1em 1.5em;
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 12px;
+      background: rgba(0,229,255,0.03);
+      min-width: 120px;
+    }
+
+    .stat-box .num {
+      font-size: 2em;
+      font-weight: 800;
+      color: var(--cyan);
+      display: block;
+    }
+
+    .stat-box .label {
+      font-size: 0.65em;
+      color: var(--dimmed);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.3em;
+      display: block;
+    }
+
+    /* Code blocks */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 10px;
+      padding: 1.2em 1.5em;
+      text-align: left;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.7em;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 1em auto;
+      max-width: 90%;
+    }
+
+    .code-block .comment { color: #546e7a; }
+    .code-block .cmd { color: var(--cyan); }
+    .code-block .flag { color: var(--purple); }
+    .code-block .string { color: var(--green); }
+    .code-block .key { color: #ff80ab; }
+    .code-block .val { color: var(--cyan); }
+    .code-block .prompt { color: var(--dimmed); user-select: none; }
+
+    /* Grid layouts */
+    .provider-grid, .channel-grid {
+      display: grid;
+      gap: 0.6em;
+      margin: 1em auto;
+      max-width: 85%;
+    }
+
+    .provider-grid { grid-template-columns: repeat(4, 1fr); }
+    .channel-grid { grid-template-columns: repeat(3, 1fr); }
+
+    .grid-item {
+      background: rgba(0,229,255,0.04);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 8px;
+      padding: 0.6em 0.8em;
+      font-size: 0.65em;
+      color: #ccd6f6;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .grid-item:hover {
+      border-color: var(--cyan);
+    }
+
+    .grid-item.highlight {
+      border-color: var(--cyan);
+      background: rgba(0,229,255,0.08);
+      color: var(--cyan);
+    }
+
+    /* Bar charts */
+    .bar-chart {
+      width: 85%;
+      margin: 1.2em auto;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      margin: 0.8em 0;
+      gap: 1em;
+    }
+
+    .bar-label {
+      width: 120px;
+      text-align: right;
+      font-size: 0.7em;
+      color: #ccd6f6;
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 38px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.8em;
+      font-size: 0.65em;
+      font-weight: 700;
+      color: #fff;
+      transition: width 0.8s ease;
+    }
+
+    .bar-fill.nc { background: linear-gradient(90deg, var(--cyan), #00b8d4); }
+    .bar-fill.zc { background: linear-gradient(90deg, var(--purple), #651fff); }
+    .bar-fill.oc { background: linear-gradient(90deg, var(--orange), #ff9100); }
+
+    .bar-value {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.65em;
+      color: var(--dimmed);
+    }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3em;
+      margin: 1em auto;
+    }
+
+    .arch-row {
+      display: flex;
+      gap: 0.8em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .arch-box {
+      padding: 0.6em 1.2em;
+      border-radius: 8px;
+      font-size: 0.6em;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .arch-box.core {
+      background: rgba(0,229,255,0.12);
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 0.75em;
+      padding: 0.8em 2em;
+    }
+
+    .arch-box.plugin {
+      background: rgba(124,77,255,0.1);
+      border: 1px solid rgba(124,77,255,0.4);
+      color: #b388ff;
+    }
+
+    .arch-box.ext {
+      background: rgba(255,109,0,0.08);
+      border: 1px solid rgba(255,109,0,0.3);
+      color: #ffab40;
+    }
+
+    .arch-arrow {
+      font-size: 1.2em;
+      color: var(--dimmed);
+      letter-spacing: 0.3em;
+    }
+
+    /* Decision matrix */
+    .matrix-table {
+      width: 85%;
+      margin: 1em auto;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.6em;
+    }
+
+    .matrix-table th {
+      background: rgba(0,229,255,0.08);
+      color: var(--cyan);
+      padding: 0.7em 1em;
+      border-bottom: 2px solid rgba(0,229,255,0.2);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .matrix-table td {
+      padding: 0.6em 1em;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: #ccd6f6;
+    }
+
+    .matrix-table tr:hover td {
+      background: rgba(0,229,255,0.03);
+    }
+
+    /* Pill badges */
+    .pill {
+      display: inline-block;
+      padding: 0.2em 0.7em;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 600;
+    }
+
+    .pill.cyan { background: rgba(0,229,255,0.15); color: var(--cyan); }
+    .pill.purple { background: rgba(124,77,255,0.15); color: #b388ff; }
+    .pill.orange { background: rgba(255,109,0,0.15); color: var(--orange); }
+    .pill.green { background: rgba(0,230,118,0.15); color: var(--green); }
+    .pill.red { background: rgba(255,23,68,0.15); color: var(--red); }
+
+    /* Section divider */
+    .section-title {
+      border-bottom: 2px solid var(--cyan);
+      padding-bottom: 0.3em;
+      display: inline-block;
+    }
+
+    .section-title.purple-border {
+      border-color: var(--purple);
+    }
+
+    /* Feature cards */
+    .feature-cards {
+      display: flex;
+      gap: 1em;
+      margin: 1em auto;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 90%;
+    }
+
+    .feature-card {
+      background: rgba(0,229,255,0.03);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 10px;
+      padding: 1em;
+      width: 200px;
+      text-align: left;
+    }
+
+    .feature-card h4 {
+      color: var(--cyan);
+      font-size: 0.75em;
+      margin: 0 0 0.4em 0;
+    }
+
+    .feature-card p {
+      font-size: 0.6em !important;
+      color: var(--dimmed);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Links */
+    .link-box {
+      display: inline-block;
+      background: rgba(0,229,255,0.06);
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 10px;
+      padding: 1em 2em;
+      margin: 0.5em;
+      transition: all 0.3s;
+    }
+
+    .link-box:hover {
+      border-color: var(--cyan);
+      background: rgba(0,229,255,0.1);
+    }
+
+    .link-box a {
+      color: var(--cyan) !important;
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    .link-box .link-label {
+      font-size: 0.6em;
+      color: var(--dimmed);
+      display: block;
+      margin-bottom: 0.3em;
+    }
+
+    /* Comparison marker */
+    .vuln {
+      color: var(--red);
+      font-size: 0.6em;
+    }
+
+    .secure {
+      color: var(--green);
+      font-size: 0.6em;
+    }
+
+    /* Slide-specific overrides */
+    .reveal .slides section {
+      padding: 20px;
+    }
+
+    .text-left { text-align: left; }
+
+    .small { font-size: 0.65em !important; color: var(--dimmed); }
+
+    .mt-1 { margin-top: 1em; }
+    .mt-2 { margin-top: 2em; }
+    .mb-1 { margin-bottom: 1em; }
+
+    .reveal .slides section .fragment.fade-up {
+      transform: translateY(20px);
+    }
+
+    /* Office packs grid */
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.7em;
+      margin: 1em auto;
+      max-width: 90%;
+    }
+
+    .pack-item {
+      background: rgba(124,77,255,0.06);
+      border: 1px solid rgba(124,77,255,0.2);
+      border-radius: 8px;
+      padding: 0.7em;
+      text-align: center;
+    }
+
+    .pack-item .pack-icon {
+      font-size: 1.5em;
+      display: block;
+      margin-bottom: 0.3em;
+    }
+
+    .pack-item .pack-name {
+      font-size: 0.65em;
+      color: #b388ff;
+      font-weight: 600;
+    }
+
+    .pack-item .pack-desc {
+      font-size: 0.5em;
+      color: var(--dimmed);
+      margin-top: 0.2em;
+    }
+
+    /* Stack diagram */
+    .stack-layer {
+      width: 70%;
+      margin: 0.4em auto;
+      padding: 0.8em;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.7em;
+      font-weight: 600;
+    }
+
+    .stack-layer.top {
+      background: rgba(124,77,255,0.12);
+      border: 1px solid rgba(124,77,255,0.4);
+      color: #b388ff;
+    }
+
+    .stack-layer.mid {
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.3);
+      color: var(--cyan);
+    }
+
+    .stack-layer.bot {
+      background: rgba(0,230,118,0.08);
+      border: 1px solid rgba(0,230,118,0.3);
+      color: var(--green);
+    }
+
+    .stack-connector {
+      text-align: center;
+      color: var(--dimmed);
+      font-size: 0.8em;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- SLIDE 1: Title -->
+      <section>
+        <h1 class="glow">NullClaw</h1>
+        <p style="font-size: 1.1em; color: #ccd6f6; margin-top: -0.2em;">
+          The <span class="glow" style="font-weight: 800;">678 KB</span> AI Revolution
+        </p>
+        <p class="subtitle">Tiny binary. Massive power. Zero compromise.</p>
+      </section>
+
+      <!-- SLIDE 2: The Problem -->
+      <section>
+        <h2>The Problem</h2>
+        <p class="subtitle mb-1">AI assistants today are bloated</p>
+        <ul>
+          <li class="fragment fade-up"><strong style="color: var(--orange);">1 GB+</strong> RAM consumption at idle</li>
+          <li class="fragment fade-up"><strong style="color: var(--orange);">Seconds</strong> to start up — not milliseconds</li>
+          <li class="fragment fade-up"><strong style="color: var(--red);">Security nightmares</strong> — CVEs, supply chain attacks</li>
+          <li class="fragment fade-up"><strong style="color: var(--orange);">Massive binaries</strong> — 28 MB+ just for a CLI</li>
+          <li class="fragment fade-up"><strong style="color: var(--dimmed);">node_modules</strong> — need we say more?</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: Meet NullClaw -->
+      <section>
+        <h2>Meet <span class="glow">NullClaw</span></h2>
+        <div class="stats-row" style="margin-top: 1.5em;">
+          <div class="stat-box fragment fade-up">
+            <span class="num">678</span>
+            <span class="label">KB Binary</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num">&lt;2</span>
+            <span class="label">ms Startup</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num">1</span>
+            <span class="label">MB RAM</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num" style="font-size: 1.3em;">Zig</span>
+            <span class="label">Language</span>
+          </div>
+        </div>
+        <p class="small mt-2">One binary. No dependencies. No runtime.</p>
+      </section>
+
+      <!-- SLIDE 4: By the Numbers -->
+      <section>
+        <h2>By the Numbers</h2>
+        <div class="stats-row" style="margin-top: 1.5em;">
+          <div class="stat-box fragment fade-up">
+            <span class="num">22+</span>
+            <span class="label">AI Providers</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num">18</span>
+            <span class="label">Channels</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num">18+</span>
+            <span class="label">Built-in Tools</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num">3,230+</span>
+            <span class="label">Tests</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: Installation -->
+      <section>
+        <h2>Installation</h2>
+        <div class="code-block">
+          <span class="comment"># Homebrew (macOS / Linux)</span><br>
+          <span class="prompt">$ </span><span class="cmd">brew</span> install nullclaw/tap/nullclaw<br>
+          <br>
+          <span class="comment"># Build from source</span><br>
+          <span class="prompt">$ </span><span class="cmd">git</span> clone https://github.com/nullclaw/nullclaw<br>
+          <span class="prompt">$ </span><span class="cmd">cd</span> nullclaw<br>
+          <span class="prompt">$ </span><span class="cmd">zig</span> build <span class="flag">-Doptimize=ReleaseSafe</span><br>
+          <br>
+          <span class="comment"># Verify</span><br>
+          <span class="prompt">$ </span><span class="cmd">nullclaw</span> <span class="flag">--version</span><br>
+          <span style="color: var(--green);">nullclaw 1.0.0 (678 KB)</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Setup -->
+      <section>
+        <h2>Setup</h2>
+        <div class="code-block">
+          <span class="comment"># Interactive onboarding — sets up provider, channel, memory</span><br>
+          <span class="prompt">$ </span><span class="cmd">nullclaw</span> onboard <span class="flag">--interactive</span><br>
+          <br>
+          <span style="color: var(--dimmed);">? Choose your AI provider:</span> <span class="string">Anthropic</span><br>
+          <span style="color: var(--dimmed);">? Enter API key:</span> <span class="string">sk-ant-***</span><br>
+          <span style="color: var(--dimmed);">? Choose channel:</span> <span class="string">Telegram</span><br>
+          <span style="color: var(--dimmed);">? Enable memory?</span> <span class="string">Yes</span><br>
+          <br>
+          <span style="color: var(--green);">&#10003; Configuration saved to ~/.config/nullclaw/config.json</span><br>
+          <span style="color: var(--green);">&#10003; Ready to go!</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Architecture -->
+      <section>
+        <h2>Architecture</h2>
+        <p class="subtitle">vtable-based pluggable design</p>
+        <div class="arch-diagram" style="margin-top: 1em;">
+          <div class="arch-row">
+            <div class="arch-box ext fragment fade-up">Telegram</div>
+            <div class="arch-box ext fragment fade-up">Discord</div>
+            <div class="arch-box ext fragment fade-up">Slack</div>
+            <div class="arch-box ext fragment fade-up">IRC</div>
+          </div>
+          <div class="arch-arrow fragment fade-up">&#9660; &#9660; &#9660; &#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box plugin fragment fade-up">Channel vtable</div>
+            <div class="arch-box plugin fragment fade-up">Provider vtable</div>
+            <div class="arch-box plugin fragment fade-up">Tool vtable</div>
+          </div>
+          <div class="arch-arrow fragment fade-up">&#9660; &#9660; &#9660;</div>
+          <div class="arch-box core fragment fade-up" style="width: 60%;">NullClaw Core Engine (678 KB)</div>
+          <div class="arch-arrow fragment fade-up">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box plugin fragment fade-up">Memory (SQLite)</div>
+            <div class="arch-box plugin fragment fade-up">Security (ChaCha20)</div>
+            <div class="arch-box plugin fragment fade-up">Scheduler (Cron)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Provider Support -->
+      <section>
+        <h2>Provider Support</h2>
+        <p class="subtitle">22+ AI providers via unified vtable interface</p>
+        <div class="provider-grid" style="margin-top: 1em;">
+          <div class="grid-item highlight">OpenRouter</div>
+          <div class="grid-item highlight">Anthropic</div>
+          <div class="grid-item highlight">OpenAI</div>
+          <div class="grid-item highlight">Ollama</div>
+          <div class="grid-item">Groq</div>
+          <div class="grid-item">Mistral</div>
+          <div class="grid-item">xAI (Grok)</div>
+          <div class="grid-item">DeepSeek</div>
+          <div class="grid-item">Google Gemini</div>
+          <div class="grid-item">Cohere</div>
+          <div class="grid-item">Perplexity</div>
+          <div class="grid-item">Together AI</div>
+          <div class="grid-item">AI21</div>
+          <div class="grid-item">Fireworks</div>
+          <div class="grid-item">Replicate</div>
+          <div class="grid-item">Cerebras</div>
+          <div class="grid-item">SambaNova</div>
+          <div class="grid-item">HuggingFace</div>
+          <div class="grid-item">Azure OpenAI</div>
+          <div class="grid-item">AWS Bedrock</div>
+          <div class="grid-item">LM Studio</div>
+          <div class="grid-item" style="border-color: rgba(0,229,255,0.3); color: var(--cyan);">+ more</div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Channel Support -->
+      <section>
+        <h2>Channel Support</h2>
+        <p class="subtitle">18 channels — one unified interface</p>
+        <div class="channel-grid" style="margin-top: 1em;">
+          <div class="grid-item highlight">Telegram</div>
+          <div class="grid-item highlight">Discord</div>
+          <div class="grid-item highlight">Slack</div>
+          <div class="grid-item">Signal</div>
+          <div class="grid-item">WhatsApp</div>
+          <div class="grid-item">IRC</div>
+          <div class="grid-item">Matrix</div>
+          <div class="grid-item">Email (IMAP)</div>
+          <div class="grid-item">Nostr</div>
+          <div class="grid-item">XMPP</div>
+          <div class="grid-item">Twitch</div>
+          <div class="grid-item">Mumble</div>
+          <div class="grid-item">Terminal</div>
+          <div class="grid-item">HTTP API</div>
+          <div class="grid-item">WebSocket</div>
+          <div class="grid-item">SMS (Twilio)</div>
+          <div class="grid-item">Webhook</div>
+          <div class="grid-item">Zulip</div>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: Memory System -->
+      <section>
+        <h2>Memory System</h2>
+        <p class="subtitle">Hybrid search — the best of both worlds</p>
+        <div class="feature-cards" style="margin-top: 1.2em;">
+          <div class="feature-card fragment fade-up">
+            <h4>SQLite + FTS5</h4>
+            <p>Full-text keyword search with BM25 ranking. Weight: <strong style="color: var(--cyan);">0.3</strong></p>
+          </div>
+          <div class="feature-card fragment fade-up">
+            <h4>Cosine Vector</h4>
+            <p>Semantic similarity search with embedding vectors. Weight: <strong style="color: var(--cyan);">0.7</strong></p>
+          </div>
+          <div class="feature-card fragment fade-up">
+            <h4>Hybrid Merge</h4>
+            <p>Combined scoring for accurate, context-aware retrieval every time.</p>
+          </div>
+        </div>
+        <div class="code-block fragment fade-up" style="max-width: 70%; font-size: 0.6em; margin-top: 1em;">
+          <span class="key">score</span> = <span class="val">0.3</span> * keyword_bm25 + <span class="val">0.7</span> * cosine_similarity
+        </div>
+      </section>
+
+      <!-- SLIDE 11: Security -->
+      <section>
+        <h2>Security</h2>
+        <p class="subtitle">Defense in depth — not an afterthought</p>
+        <ul style="margin-top: 1em;">
+          <li class="fragment fade-up"><strong style="color: var(--cyan);">ChaCha20-Poly1305</strong> — AEAD encryption for all secrets</li>
+          <li class="fragment fade-up"><strong style="color: var(--cyan);">Multi-layer sandbox</strong> — Seccomp-BPF + Landlock + pledge</li>
+          <li class="fragment fade-up"><strong style="color: var(--cyan);">Workspace scoping</strong> — tools restricted to project directory</li>
+          <li class="fragment fade-up"><strong style="color: var(--cyan);">No eval()</strong> — no dynamic code execution, ever</li>
+          <li class="fragment fade-up"><strong style="color: var(--cyan);">Zero dependencies</strong> — nothing in your supply chain to exploit</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 12: Comparison Title -->
+      <section>
+        <h2 class="section-title">NullClaw vs The Competition</h2>
+        <p class="subtitle" style="margin-top: 1em;">How the three claws compare</p>
+        <div class="stats-row" style="margin-top: 2em;">
+          <div class="stat-box">
+            <span class="num" style="color: var(--cyan);">NullClaw</span>
+            <span class="label"><span class="pill cyan">Zig</span></span>
+          </div>
+          <div class="stat-box">
+            <span class="num" style="color: var(--purple);">ZeroClaw</span>
+            <span class="label"><span class="pill purple">Rust</span></span>
+          </div>
+          <div class="stat-box">
+            <span class="num" style="color: var(--orange);">OpenClaw</span>
+            <span class="label"><span class="pill orange">TypeScript</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 13: Size Comparison -->
+      <section>
+        <h2>Binary Size</h2>
+        <div class="bar-chart" style="margin-top: 2em;">
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">NullClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill nc" style="width: 6%;">678 KB</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">ZeroClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill zc" style="width: 25%;">3.4 MB</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">OpenClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill oc" style="width: 95%;">28 MB</div>
+              <span class="bar-value">+ node_modules</span>
+            </div>
+          </div>
+        </div>
+        <p class="small mt-2">NullClaw is <strong style="color: var(--cyan);">41x smaller</strong> than OpenClaw</p>
+      </section>
+
+      <!-- SLIDE 14: RAM Comparison -->
+      <section>
+        <h2>Memory Usage (RAM)</h2>
+        <div class="bar-chart" style="margin-top: 2em;">
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">NullClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill nc" style="width: 4%;">1 MB</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">ZeroClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill zc" style="width: 8%;">5 MB</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">OpenClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill oc" style="width: 90%;">1 GB+</div>
+            </div>
+          </div>
+        </div>
+        <p class="small mt-2">NullClaw uses <strong style="color: var(--cyan);">1,000x less RAM</strong> than OpenClaw</p>
+      </section>
+
+      <!-- SLIDE 15: Startup Comparison -->
+      <section>
+        <h2>Startup Time</h2>
+        <div class="bar-chart" style="margin-top: 2em;">
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">NullClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill nc" style="width: 5%;">2 ms</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">ZeroClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill zc" style="width: 12%;">10 ms</div>
+            </div>
+          </div>
+          <div class="bar-row fragment fade-up">
+            <div class="bar-label">OpenClaw</div>
+            <div class="bar-track">
+              <div class="bar-fill oc" style="width: 85%;">~800 ms</div>
+              <span class="bar-value">cold start</span>
+            </div>
+          </div>
+        </div>
+        <p class="small mt-2">NullClaw starts <strong style="color: var(--cyan);">400x faster</strong> than OpenClaw</p>
+      </section>
+
+      <!-- SLIDE 16: Language Comparison -->
+      <section>
+        <h2>Language Comparison</h2>
+        <table class="matrix-table" style="margin-top: 1.5em;">
+          <tr>
+            <th></th>
+            <th style="color: var(--cyan);">NullClaw</th>
+            <th style="color: var(--purple);">ZeroClaw</th>
+            <th style="color: var(--orange);">OpenClaw</th>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Language</td>
+            <td><span class="pill cyan">Zig</span></td>
+            <td><span class="pill purple">Rust</span></td>
+            <td><span class="pill orange">TypeScript</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Runtime</td>
+            <td>None</td>
+            <td>None</td>
+            <td>Node.js / Bun</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Dependencies</td>
+            <td><span style="color: var(--green);">0</span></td>
+            <td>~30 crates</td>
+            <td><span style="color: var(--red);">200+ packages</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Compile Time</td>
+            <td>~8s</td>
+            <td>~45s</td>
+            <td>N/A (interpreted)</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Memory Safety</td>
+            <td>Manual + sanitizers</td>
+            <td>Borrow checker</td>
+            <td>GC-managed</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- SLIDE 17: Security Comparison -->
+      <section>
+        <h2>Security Comparison</h2>
+        <table class="matrix-table" style="margin-top: 1.5em;">
+          <tr>
+            <th>Aspect</th>
+            <th style="color: var(--cyan);">NullClaw</th>
+            <th style="color: var(--purple);">ZeroClaw</th>
+            <th style="color: var(--orange);">OpenClaw</th>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Encryption</td>
+            <td><span class="secure">ChaCha20-Poly1305</span></td>
+            <td><span class="secure">AES-256-GCM</span></td>
+            <td><span style="color: var(--dimmed);">AES-256-CBC</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Sandbox</td>
+            <td><span class="secure">Multi-layer</span></td>
+            <td><span style="color: var(--dimmed);">Basic</span></td>
+            <td><span class="vuln">None</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Supply Chain</td>
+            <td><span class="secure">0 deps</span></td>
+            <td><span style="color: var(--dimmed);">~30 crates</span></td>
+            <td><span class="vuln">200+ packages</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Known CVEs</td>
+            <td><span class="secure">None</span></td>
+            <td><span class="secure">None</span></td>
+            <td><span class="vuln">CVE-2026-25253</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Eval / exec</td>
+            <td><span class="secure">Forbidden</span></td>
+            <td><span class="secure">Forbidden</span></td>
+            <td><span class="vuln">Used internally</span></td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- SLIDE 18: When to Choose -->
+      <section>
+        <h2>When to Choose Which</h2>
+        <table class="matrix-table" style="margin-top: 1em;">
+          <tr>
+            <th>Use Case</th>
+            <th>Best Pick</th>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Edge / IoT / embedded deployment</td>
+            <td><span class="pill cyan">NullClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Maximum security requirements</td>
+            <td><span class="pill cyan">NullClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Self-hosted with low resources</td>
+            <td><span class="pill cyan">NullClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Team already writes Rust</td>
+            <td><span class="pill purple">ZeroClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Need custom Rust plugins</td>
+            <td><span class="pill purple">ZeroClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Rapid JS/TS prototyping</td>
+            <td><span class="pill orange">OpenClaw</span></td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td>Large existing npm ecosystem</td>
+            <td><span class="pill orange">OpenClaw</span></td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- SLIDE 19: Advanced Mode Title -->
+      <section>
+        <h2 class="section-title purple-border"><span class="glow-purple">Advanced Mode</span></h2>
+        <p style="font-size: 1.1em; color: #ccd6f6; margin-top: 1em;">Unleashing Full Power</p>
+        <p class="subtitle">Daemon + Cron + Full Autonomy</p>
+      </section>
+
+      <!-- SLIDE 20: Daemon Mode -->
+      <section>
+        <h2>Daemon Mode</h2>
+        <p class="subtitle">Always-on background operation</p>
+        <div class="code-block" style="margin-top: 1.5em;">
+          <span class="comment"># Start the daemon</span><br>
+          <span class="prompt">$ </span><span class="cmd">nullclaw</span> daemon <span class="flag">--start</span><br>
+          <span style="color: var(--green);">&#10003; Daemon running (PID 4821, 0.9 MB RAM)</span><br>
+          <br>
+          <span class="comment"># Check status</span><br>
+          <span class="prompt">$ </span><span class="cmd">nullclaw</span> daemon <span class="flag">--status</span><br>
+          <span style="color: var(--dimmed);">Uptime: 14d 3h | Messages: 12,847 | Memory: 0.9 MB</span><br>
+          <br>
+          <span class="comment"># Graceful stop</span><br>
+          <span class="prompt">$ </span><span class="cmd">nullclaw</span> daemon <span class="flag">--stop</span>
+        </div>
+        <ul style="margin-top: 1em;">
+          <li class="fragment fade-up">Persists across reboots via systemd / launchd</li>
+          <li class="fragment fade-up">Sub-1 MB memory footprint — runs on anything</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 21: Cron Scheduler -->
+      <section>
+        <h2>Cron Scheduler</h2>
+        <p class="subtitle">JSON-persisted scheduled tasks</p>
+        <div class="code-block" style="margin-top: 1.5em;">
+          <span class="comment">// ~/.config/nullclaw/cron.json</span><br>
+          {<br>
+          &nbsp;&nbsp;<span class="key">"tasks"</span>: [<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"name"</span>: <span class="string">"morning-brief"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"schedule"</span>: <span class="string">"0 8 * * *"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"action"</span>: <span class="string">"Summarize overnight messages"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"channel"</span>: <span class="string">"telegram"</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"name"</span>: <span class="string">"health-check"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"schedule"</span>: <span class="string">"*/5 * * * *"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"action"</span>: <span class="string">"Check system health"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"channel"</span>: <span class="string">"webhook"</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+          &nbsp;&nbsp;]<br>
+          }
+        </div>
+      </section>
+
+      <!-- SLIDE 22: Full Autonomy Config -->
+      <section>
+        <h2>Full Autonomy</h2>
+        <p class="subtitle">Let NullClaw act on its own</p>
+        <div class="code-block" style="margin-top: 1.5em;">
+          <span class="comment">// ~/.config/nullclaw/config.json</span><br>
+          {<br>
+          &nbsp;&nbsp;<span class="key">"autonomy"</span>: {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"level"</span>: <span class="string">"full"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"allowed_tools"</span>: [<span class="string">"web"</span>, <span class="string">"file"</span>, <span class="string">"shell"</span>, <span class="string">"git"</span>],<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"confirm_destructive"</span>: <span class="val">true</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"max_cost_per_hour"</span>: <span class="val">0.50</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"workspace"</span>: <span class="string">"~/projects/myapp"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"sandbox"</span>: <span class="val">true</span><br>
+          &nbsp;&nbsp;},<br>
+          &nbsp;&nbsp;<span class="key">"memory"</span>: {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"enabled"</span>: <span class="val">true</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"max_entries"</span>: <span class="val">10000</span><br>
+          &nbsp;&nbsp;}<br>
+          }
+        </div>
+      </section>
+
+      <!-- SLIDE 23: AI CEO Clone Title -->
+      <section>
+        <h2 class="section-title"><span class="glow">Build Your AI CEO</span></h2>
+        <p style="font-size: 1.1em; color: #ccd6f6; margin-top: 1em;">From assistant to autonomous leader</p>
+        <p class="subtitle">NullClaw + Claw-Empire</p>
+      </section>
+
+      <!-- SLIDE 24: What is an AI CEO Clone -->
+      <section>
+        <h2>What is an AI CEO Clone?</h2>
+        <p class="subtitle">An autonomous agent that thinks like a leader</p>
+        <div class="feature-cards" style="margin-top: 1.2em;">
+          <div class="feature-card fragment fade-up">
+            <h4>Monitor</h4>
+            <p>Watches channels, systems, and data streams around the clock.</p>
+          </div>
+          <div class="feature-card fragment fade-up">
+            <h4>Decide</h4>
+            <p>Uses memory and context to make informed autonomous decisions.</p>
+          </div>
+          <div class="feature-card fragment fade-up">
+            <h4>Act</h4>
+            <p>Delegates tasks, sends messages, runs tools — without prompting.</p>
+          </div>
+          <div class="feature-card fragment fade-up">
+            <h4>Learn</h4>
+            <p>Stores outcomes in memory for better future decisions.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 25: NullClaw as CEO -->
+      <section>
+        <h2>NullClaw as CEO</h2>
+        <p class="subtitle">Four pillars of autonomous leadership</p>
+        <div class="stats-row" style="margin-top: 1.5em;">
+          <div class="stat-box fragment fade-up">
+            <span class="num" style="font-size: 1.2em;">Daemon</span>
+            <span class="label">Always on</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num" style="font-size: 1.2em;">Cron</span>
+            <span class="label">Scheduled Tasks</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num" style="font-size: 1.2em;">Autonomy</span>
+            <span class="label">Full Self-Direction</span>
+          </div>
+          <div class="stat-box fragment fade-up">
+            <span class="num" style="font-size: 1.2em;">Memory</span>
+            <span class="label">Persistent Context</span>
+          </div>
+        </div>
+        <p class="small mt-2">Combined: a self-sustaining AI executive running at 1 MB RAM</p>
+      </section>
+
+      <!-- SLIDE 26: Claw-Empire -->
+      <section>
+        <h2>Claw-Empire</h2>
+        <p class="subtitle">Virtual AI company simulator</p>
+        <ul style="margin-top: 1em;">
+          <li class="fragment fade-up">Spawn an entire <strong style="color: var(--purple);">virtual company</strong> of AI agents</li>
+          <li class="fragment fade-up">Each agent has a <strong style="color: var(--cyan);">role</strong>: CEO, CTO, marketer, developer...</li>
+          <li class="fragment fade-up">Agents <strong style="color: var(--cyan);">communicate</strong> through channels and delegate work</li>
+          <li class="fragment fade-up">Built on NullClaw — each agent uses <strong style="color: var(--cyan);">&lt;1 MB</strong> RAM</li>
+          <li class="fragment fade-up">Run a <strong style="color: var(--purple);">10-agent company</strong> on a Raspberry Pi</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 27: CEO Directives -->
+      <section>
+        <h2>CEO Directives</h2>
+        <p class="subtitle">$-prefix commands for task delegation</p>
+        <div class="code-block" style="margin-top: 1.5em;">
+          <span class="comment"># Delegate to the dev team</span><br>
+          <span class="cmd">$dev</span> <span class="string">Implement the new API endpoint for user profiles</span><br>
+          <br>
+          <span class="comment"># Request a status report</span><br>
+          <span class="cmd">$marketing</span> <span class="string">Give me this week's campaign metrics</span><br>
+          <br>
+          <span class="comment"># Strategic decision</span><br>
+          <span class="cmd">$all</span> <span class="string">Pivot focus to mobile-first for Q2</span><br>
+          <br>
+          <span class="comment"># Direct tool use</span><br>
+          <span class="cmd">$ops</span> <span class="string">Deploy v2.1 to staging and run smoke tests</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 28: Office Packs -->
+      <section>
+        <h2>Office Packs</h2>
+        <p class="subtitle">6 pre-built workflow templates</p>
+        <div class="pack-grid" style="margin-top: 1em;">
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#128640;</span>
+            <div class="pack-name">Startup Pack</div>
+            <div class="pack-desc">MVP development workflow</div>
+          </div>
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#128200;</span>
+            <div class="pack-name">Marketing Pack</div>
+            <div class="pack-desc">Content + campaign pipeline</div>
+          </div>
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#128187;</span>
+            <div class="pack-name">DevOps Pack</div>
+            <div class="pack-desc">CI/CD + monitoring</div>
+          </div>
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#128176;</span>
+            <div class="pack-name">Finance Pack</div>
+            <div class="pack-desc">Invoicing + reporting</div>
+          </div>
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#127891;</span>
+            <div class="pack-name">Research Pack</div>
+            <div class="pack-desc">Data collection + analysis</div>
+          </div>
+          <div class="pack-item fragment fade-up">
+            <span class="pack-icon">&#129309;</span>
+            <div class="pack-name">Support Pack</div>
+            <div class="pack-desc">Ticket triage + responses</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 29: The Full Stack -->
+      <section>
+        <h2>The Full Stack</h2>
+        <p class="subtitle">Two layers, infinite possibility</p>
+        <div style="margin-top: 1.5em;">
+          <div class="stack-layer top fragment fade-up">
+            Claw-Empire &mdash; Orchestration Layer<br>
+            <span style="font-size: 0.7em; font-weight: 400; color: var(--dimmed);">Roles, directives, company simulation, office packs</span>
+          </div>
+          <div class="stack-connector fragment fade-up">&#9660;</div>
+          <div class="stack-layer mid fragment fade-up">
+            NullClaw &mdash; Runtime Layer<br>
+            <span style="font-size: 0.7em; font-weight: 400; color: var(--dimmed);">Daemon, cron, providers, channels, tools, memory, security</span>
+          </div>
+          <div class="stack-connector fragment fade-up">&#9660;</div>
+          <div class="stack-layer bot fragment fade-up">
+            Infrastructure &mdash; Your Hardware<br>
+            <span style="font-size: 0.7em; font-weight: 400; color: var(--dimmed);">Server, VPS, Raspberry Pi, laptop — anywhere Zig runs</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 30: Get Started -->
+      <section>
+        <h1 class="glow">Get Started</h1>
+        <p class="subtitle" style="margin-bottom: 2em;">Join the 678 KB revolution</p>
+        <div>
+          <div class="link-box fragment fade-up">
+            <span class="link-label">Source Code</span>
+            <a href="https://github.com/nullclaw/nullclaw" target="_blank">github.com/nullclaw/nullclaw</a>
+          </div>
+          <div class="link-box fragment fade-up">
+            <span class="link-label">Documentation</span>
+            <a href="https://nullclaw.org" target="_blank">nullclaw.org</a>
+          </div>
+        </div>
+        <div class="code-block fragment fade-up" style="max-width: 50%; margin-top: 2em; text-align: center;">
+          <span class="prompt">$ </span><span class="cmd">brew</span> install nullclaw/tap/nullclaw
+        </div>
+        <p class="small mt-2">MIT Licensed &middot; Built with Zig &middot; Zero Dependencies</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      transition: 'slide',
+      transitionSpeed: 'default',
+      backgroundTransition: 'fade',
+      center: true,
+      controls: true,
+      progress: true,
+      slideNumber: true,
+      width: 1280,
+      height: 720,
+    });
+  </script>
+</body>
+</html>

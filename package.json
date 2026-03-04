@@ -1,0 +1,25 @@
+{
+  "name": "amtocbot-nullclaw-videos",
+  "version": "1.0.0",
+  "description": "NullClaw content suite: blog, slideshow, and explainer videos",
+  "scripts": {
+    "preview": "remotion preview src/index.ts",
+    "render-all": "node scripts/render-all.mjs",
+    "generate-audio": "npx tsx scripts/generate-audio.ts",
+    "build": "remotion render src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/player": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0",
+    "edge-tts": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0"
+  }
+}

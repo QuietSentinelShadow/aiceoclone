@@ -1,0 +1,98 @@
+{
+  "models": {
+    "providers": {
+      "openrouter": {
+        "api_key": "sk-or-YOUR_KEY_HERE",
+        "base_url": "https://openrouter.ai/api/v1"
+      },
+      "anthropic": {
+        "api_key": "sk-ant-YOUR_KEY_HERE"
+      },
+      "ollama": {
+        "base_url": "http://localhost:11434"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic:claude-sonnet-4-6",
+        "fallback": "openrouter:google/gemini-2.5-flash"
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "bot_token": "YOUR_TELEGRAM_BOT_TOKEN",
+      "allow_from": [123456789]
+    },
+    "slack": {
+      "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+      "allow_from": ["U_YOUR_SLACK_USER_ID"]
+    },
+    "discord": {
+      "bot_token": "YOUR_DISCORD_BOT_TOKEN",
+      "allow_from": ["YOUR_DISCORD_USER_ID"]
+    }
+  },
+  "memory": {
+    "backend": "sqlite",
+    "embedding_provider": "openrouter",
+    "search_weights": {
+      "vector": 0.7,
+      "keyword": 0.3
+    },
+    "hygiene": {
+      "enabled": true,
+      "max_entries": 10000,
+      "snapshot_interval": "24h"
+    }
+  },
+  "security": {
+    "sandbox_backend": "auto",
+    "workspace_path": "~/.nullclaw/workspace",
+    "resource_limits": {
+      "max_memory_mb": 512,
+      "max_cpu_percent": 50,
+      "max_disk_mb": 1024
+    },
+    "audit": {
+      "enabled": true,
+      "retention_days": 30
+    }
+  },
+  "autonomy": {
+    "level": "full",
+    "allowed_commands": ["*"],
+    "allowed_paths": ["*"],
+    "risk_threshold": "medium",
+    "confirmation_required_for": ["rm", "shutdown", "reboot"]
+  },
+  "http_request": {
+    "enabled": true,
+    "search_base_url": "https://searx.example.com",
+    "search_provider": "auto"
+  },
+  "cron": {
+    "tasks": [
+      {
+        "name": "morning-briefing",
+        "schedule": "0 8 * * *",
+        "action": "Summarize all overnight messages and create a daily briefing",
+        "channel": "telegram"
+      },
+      {
+        "name": "weekly-report",
+        "schedule": "0 17 * * 5",
+        "action": "Generate a weekly status report from all conversations and tasks",
+        "channel": "slack"
+      },
+      {
+        "name": "system-health",
+        "schedule": "*/30 * * * *",
+        "action": "Run system health checks and report any issues",
+        "channel": "telegram"
+      }
+    ]
+  }
+}

@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NullClaw: The 678 KB AI Revolution</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0f',
+            'bg-card': '#12121a',
+            'bg-code': '#0d0d14',
+            cyan: '#00e5ff',
+            'cyan-dim': '#00b8cc',
+            purple: '#7c4dff',
+            'purple-dim': '#5c3cbf',
+            border: '#1e1e2e',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #0a0a0f;
+      color: #e0e0e8;
+    }
+
+    ::selection {
+      background: rgba(0, 229, 255, 0.25);
+      color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e1e2e;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2e2e3e;
+    }
+
+    .glow-cyan {
+      text-shadow: 0 0 40px rgba(0, 229, 255, 0.3), 0 0 80px rgba(0, 229, 255, 0.1);
+    }
+
+    .glow-line {
+      background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+      height: 1px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-glow:hover {
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.07), 0 0 60px rgba(124, 77, 255, 0.04);
+    }
+
+    .toc-link.active {
+      color: #00e5ff;
+      border-left-color: #00e5ff;
+    }
+
+    pre code {
+      counter-reset: line;
+    }
+
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.05) 0%, rgba(124, 77, 255, 0.05) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.1);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(0, 229, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .table-row:hover {
+      background: rgba(0, 229, 255, 0.03);
+    }
+
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .pulse-dot {
+      animation: pulse-slow 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .float-anim {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ============================================================ -->
+  <!-- TABLE OF CONTENTS SIDEBAR (Desktop) -->
+  <!-- ============================================================ -->
+  <aside id="toc-sidebar" class="hidden xl:block fixed left-0 top-0 h-screen w-64 pt-24 pb-8 pl-6 pr-4 z-40 overflow-y-auto">
+    <nav>
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">Contents</p>
+      <ul class="space-y-1">
+        <li><a href="#hero" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">Introduction</a></li>
+        <li><a href="#what-is-nullclaw" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">What is NullClaw?</a></li>
+        <li><a href="#quick-setup" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">Quick Setup Guide</a></li>
+        <li><a href="#comparison" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">NullClaw vs Others</a></li>
+        <li><a href="#advanced-mode" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">Advanced Mode</a></li>
+        <li><a href="#ai-ceo-clone" class="toc-link block py-1.5 pl-3 border-l-2 border-border text-sm text-gray-400 hover:text-cyan transition-colors">Building Your AI CEO</a></li>
+      </ul>
+    </nav>
+    <div class="mt-8 pt-6 border-t border-border">
+      <p class="text-[11px] text-gray-600 leading-relaxed">Published March 4, 2026</p>
+      <p class="text-[11px] text-gray-600 leading-relaxed">12 min read</p>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MOBILE TOC (Top Bar) -->
+  <!-- ============================================================ -->
+  <nav id="mobile-toc" class="xl:hidden fixed top-0 left-0 right-0 z-50 bg-bg/90 backdrop-blur-md border-b border-border">
+    <div class="flex items-center gap-1 px-4 py-3 overflow-x-auto text-xs font-medium whitespace-nowrap">
+      <a href="#hero" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">Intro</a>
+      <span class="text-gray-700">/</span>
+      <a href="#what-is-nullclaw" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">What</a>
+      <span class="text-gray-700">/</span>
+      <a href="#quick-setup" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">Setup</a>
+      <span class="text-gray-700">/</span>
+      <a href="#comparison" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">Compare</a>
+      <span class="text-gray-700">/</span>
+      <a href="#advanced-mode" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">Advanced</a>
+      <span class="text-gray-700">/</span>
+      <a href="#ai-ceo-clone" class="text-gray-400 hover:text-cyan transition-colors px-2 py-1">AI&nbsp;CEO</a>
+    </div>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- MAIN CONTENT -->
+  <!-- ============================================================ -->
+  <main class="xl:ml-64 min-h-screen">
+
+    <!-- ========== HERO SECTION ========== -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center hero-grid overflow-hidden">
+      <!-- Background orbs -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan/5 rounded-full blur-3xl float-anim"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple/5 rounded-full blur-3xl float-anim" style="animation-delay: -3s;"></div>
+
+      <div class="relative z-10 max-w-4xl mx-auto px-6 text-center py-32">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan/20 bg-cyan/5 mb-8">
+          <span class="w-2 h-2 rounded-full bg-cyan pulse-dot"></span>
+          <span class="text-cyan text-xs font-medium tracking-wide uppercase">Open Source &middot; Zig &middot; AI Gateway</span>
+        </div>
+
+        <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] mb-6 glow-cyan">
+          <span class="text-white">Null</span><span class="text-cyan">Claw</span>
+        </h1>
+        <p class="text-2xl sm:text-3xl md:text-4xl font-light text-gray-300 mb-4">
+          The <span class="gradient-text font-semibold">678 KB</span> AI Revolution
+        </p>
+        <p class="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed">
+          A self-contained AI gateway that fits on a floppy disk. Zero dependencies.
+          Sub-millisecond startup. Runs anywhere from a Raspberry Pi to a data center.
+        </p>
+
+        <!-- Stat cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto">
+          <div class="stat-card rounded-xl p-4 transition-all duration-300">
+            <p class="text-2xl sm:text-3xl font-bold text-white">678<span class="text-cyan text-lg ml-0.5">KB</span></p>
+            <p class="text-xs text-gray-500 mt-1">Binary Size</p>
+          </div>
+          <div class="stat-card rounded-xl p-4 transition-all duration-300">
+            <p class="text-2xl sm:text-3xl font-bold text-white">&lt;2<span class="text-cyan text-lg ml-0.5">ms</span></p>
+            <p class="text-xs text-gray-500 mt-1">Startup Time</p>
+          </div>
+          <div class="stat-card rounded-xl p-4 transition-all duration-300">
+            <p class="text-2xl sm:text-3xl font-bold text-white">~1<span class="text-cyan text-lg ml-0.5">MB</span></p>
+            <p class="text-xs text-gray-500 mt-1">RAM Usage</p>
+          </div>
+          <div class="stat-card rounded-xl p-4 transition-all duration-300">
+            <p class="text-2xl sm:text-3xl font-bold text-white">22<span class="text-cyan text-lg ml-0.5">+</span></p>
+            <p class="text-xs text-gray-500 mt-1">AI Providers</p>
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="mt-16">
+          <a href="#what-is-nullclaw" class="inline-flex flex-col items-center gap-2 text-gray-600 hover:text-cyan transition-colors">
+            <span class="text-xs tracking-widest uppercase">Explore</span>
+            <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="glow-line max-w-xl mx-auto"></div>
+
+    <!-- ========== ARTICLE BODY ========== -->
+    <div class="max-w-3xl mx-auto px-6 py-20 space-y-24">
+
+      <!-- ========== WHAT IS NULLCLAW ========== -->
+      <section id="what-is-nullclaw">
+        <p class="text-cyan text-xs font-semibold tracking-widest uppercase mb-3">Chapter 01</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-8 leading-tight">What is NullClaw?</h2>
+
+        <div class="space-y-5 text-gray-300 leading-relaxed text-[15px]">
+          <p>
+            NullClaw is a <strong class="text-white">678 KB static Zig binary</strong> that serves as a
+            fully self-contained AI gateway, agent runtime, and automation platform. It has zero runtime
+            dependencies &mdash; no Python, no Node.js, no Docker required. Just drop the binary and run.
+          </p>
+          <p>
+            Designed from the ground up for extreme efficiency, NullClaw starts in under
+            <strong class="text-white">2 milliseconds</strong> and operates within roughly
+            <strong class="text-white">1 MB of RAM</strong>. Despite its minimal footprint, it
+            packs serious capability: support for <strong class="text-white">22+ AI providers</strong>,
+            <strong class="text-white">18 communication channels</strong>,
+            <strong class="text-white">18+ built-in tools</strong>, and a test suite spanning
+            <strong class="text-white">3,230+ tests</strong>.
+          </p>
+          <p>
+            Whether you are running it on a $5 Raspberry Pi Zero, an edge IoT node, a CI/CD pipeline, or a
+            full production server, NullClaw delivers the same experience: instant startup, predictable
+            resource usage, and zero configuration drift.
+          </p>
+        </div>
+
+        <!-- Feature grid -->
+        <div class="grid sm:grid-cols-2 gap-4 mt-10">
+          <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+            <div class="w-9 h-9 rounded-lg bg-cyan/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="text-white font-semibold mb-1">22+ AI Providers</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">OpenAI, Anthropic, Google, Mistral, Groq, OpenRouter, Ollama, and many more &mdash; all via a unified API.</p>
+          </div>
+          <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+            <div class="w-9 h-9 rounded-lg bg-purple/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            </div>
+            <h3 class="text-white font-semibold mb-1">18 Channels</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Telegram, Discord, Slack, IRC, Matrix, CLI, HTTP API, WebSocket, and more &mdash; connect everywhere.</p>
+          </div>
+          <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+            <div class="w-9 h-9 rounded-lg bg-cyan/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h3 class="text-white font-semibold mb-1">18+ Tools</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">File operations, shell commands, web search, code execution, git operations, and autonomous task runners.</p>
+          </div>
+          <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+            <div class="w-9 h-9 rounded-lg bg-purple/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="text-white font-semibold mb-1">3,230+ Tests</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Comprehensive test coverage across unit, integration, and fuzz tests for rock-solid reliability.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== QUICK SETUP ========== -->
+      <section id="quick-setup">
+        <p class="text-cyan text-xs font-semibold tracking-widest uppercase mb-3">Chapter 02</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">Quick Setup Guide</h2>
+        <p class="text-gray-400 mb-10 leading-relaxed">Get NullClaw running in under a minute. No dependencies to install, no containers to pull.</p>
+
+        <!-- Step 1: Install -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">1</span>
+            <h3 class="text-lg font-semibold text-white">Install</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Via Homebrew (macOS / Linux):</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> brew install nullclaw</code></pre>
+          </div>
+          <p class="text-gray-400 text-sm mt-4 mb-3 ml-11">Or build from source:</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> git clone https://github.com/nullclaw/nullclaw.git
+<span class="text-cyan">$</span> cd nullclaw
+<span class="text-cyan">$</span> zig build -Doptimize=ReleaseSmall</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 2: Onboard -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">2</span>
+            <h3 class="text-lg font-semibold text-white">Onboard</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Interactive wizard (recommended for first-timers):</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw onboard --interactive</code></pre>
+          </div>
+          <p class="text-gray-400 text-sm mt-4 mb-3 ml-11">Or one-liner for CI/scripts:</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw onboard --api-key sk-... --provider openrouter</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 3: Start Gateway -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">3</span>
+            <h3 class="text-lg font-semibold text-white">Start Gateway</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Launch the API gateway (defaults to <code class="text-cyan/80 bg-cyan/5 px-1.5 py-0.5 rounded text-xs font-mono">127.0.0.1:3000</code>):</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw gateway
+<span class="text-gray-600"># Gateway listening on 127.0.0.1:3000
+# OpenAI-compatible API ready</span></code></pre>
+          </div>
+        </div>
+
+        <!-- Step 4: Channel -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">4</span>
+            <h3 class="text-lg font-semibold text-white">Connect a Channel</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Spin up a Telegram bot (or any of 18 channels):</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw channel start telegram</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 5: Daemon -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">5</span>
+            <h3 class="text-lg font-semibold text-white">Daemon Mode</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Run NullClaw in the background as a daemon:</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw daemon</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 6: Service -->
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan text-sm font-bold">6</span>
+            <h3 class="text-lg font-semibold text-white">OS-Managed Service</h3>
+          </div>
+          <p class="text-gray-400 text-sm mb-3 ml-11">Install as a system service (systemd / launchd / Windows Service):</p>
+          <div class="bg-bg-code border border-border rounded-xl overflow-hidden ml-11">
+            <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+              <span class="ml-auto text-[11px] text-gray-600 font-mono">terminal</span>
+            </div>
+            <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300"><span class="text-cyan">$</span> nullclaw service install
+<span class="text-gray-600"># Installs and starts NullClaw as an OS-managed service
+# Auto-restarts on crash, starts on boot</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== COMPARISON ========== -->
+      <section id="comparison">
+        <p class="text-cyan text-xs font-semibold tracking-widest uppercase mb-3">Chapter 03</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">NullClaw vs OpenClaw vs ZeroClaw</h2>
+        <p class="text-gray-400 mb-10 leading-relaxed">
+          Three open-source AI agent frameworks, three very different philosophies. Here is how they stack up.
+        </p>
+
+        <!-- Comparison Table -->
+        <div class="overflow-x-auto -mx-6 px-6">
+          <div class="bg-bg-card border border-border rounded-xl overflow-hidden min-w-[640px]">
+            <!-- Table Header -->
+            <div class="grid grid-cols-4 bg-bg-code">
+              <div class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Feature</div>
+              <div class="px-5 py-4 text-xs font-semibold text-cyan uppercase tracking-wider">NullClaw</div>
+              <div class="px-5 py-4 text-xs font-semibold text-orange-400 uppercase tracking-wider">ZeroClaw</div>
+              <div class="px-5 py-4 text-xs font-semibold text-emerald-400 uppercase tracking-wider">OpenClaw</div>
+            </div>
+
+            <!-- Language -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">Language</div>
+              <div class="px-5 py-4 text-sm text-white font-mono">Zig</div>
+              <div class="px-5 py-4 text-sm text-gray-300 font-mono">Rust</div>
+              <div class="px-5 py-4 text-sm text-gray-300 font-mono">TypeScript</div>
+            </div>
+
+            <!-- Binary Size -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">Binary Size</div>
+              <div class="px-5 py-4 text-sm text-cyan font-semibold">678 KB</div>
+              <div class="px-5 py-4 text-sm text-gray-300">3.4 MB</div>
+              <div class="px-5 py-4 text-sm text-gray-300">~28 MB</div>
+            </div>
+
+            <!-- RAM Usage -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">RAM Usage</div>
+              <div class="px-5 py-4 text-sm text-cyan font-semibold">~1 MB</div>
+              <div class="px-5 py-4 text-sm text-gray-300">&lt;5 MB</div>
+              <div class="px-5 py-4 text-sm text-gray-300">1 GB+</div>
+            </div>
+
+            <!-- Startup Time -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">Startup Time</div>
+              <div class="px-5 py-4 text-sm text-cyan font-semibold">&lt;2 ms</div>
+              <div class="px-5 py-4 text-sm text-gray-300">&lt;10 ms</div>
+              <div class="px-5 py-4 text-sm text-gray-300">Seconds</div>
+            </div>
+
+            <!-- Security -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">Security</div>
+              <div class="px-5 py-4 text-sm text-gray-300 leading-relaxed">
+                <span class="text-white">ChaCha20-Poly1305</span><br />
+                <span class="text-gray-500 text-xs">Landlock, Firejail, Bubblewrap, Docker</span>
+              </div>
+              <div class="px-5 py-4 text-sm text-gray-300 leading-relaxed">
+                Workspace scoping<br />
+                <span class="text-gray-500 text-xs">localhost-only</span>
+              </div>
+              <div class="px-5 py-4 text-sm text-gray-300 leading-relaxed">
+                DM pairing, allowlists<br />
+                <span class="text-red-400 text-xs font-medium">CVE-2026-25253 RCE vuln</span>
+              </div>
+            </div>
+
+            <!-- Best For -->
+            <div class="grid grid-cols-4 border-t border-border table-row transition-colors">
+              <div class="px-5 py-4 text-sm text-gray-400 font-medium">Best For</div>
+              <div class="px-5 py-4 text-sm text-gray-300">Edge / IoT, $5 boards</div>
+              <div class="px-5 py-4 text-sm text-gray-300">Production deployments</div>
+              <div class="px-5 py-4 text-sm text-gray-300">Full-featured ecosystems</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis -->
+        <div class="mt-12 space-y-8">
+          <!-- NullClaw Analysis -->
+          <div class="bg-bg-card border border-cyan/10 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-3 h-3 rounded-full bg-cyan"></span>
+              <h3 class="text-white font-semibold text-lg">NullClaw &mdash; The Minimalist Powerhouse</h3>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              NullClaw occupies a unique position in the AI agent landscape: maximum capability in minimum
+              space. Written in Zig with zero allocator overhead, it produces a single static binary smaller
+              than most JPEG images. This makes it ideal for edge deployments, IoT devices, embedded systems,
+              and any environment where resources are constrained. Its security model is defense-in-depth,
+              layering ChaCha20-Poly1305 encryption with OS-level sandboxing via Landlock, Firejail,
+              Bubblewrap, or Docker isolation. The trade-off is a smaller ecosystem and a steeper learning
+              curve for contributors unfamiliar with Zig.
+            </p>
+          </div>
+
+          <!-- ZeroClaw Analysis -->
+          <div class="bg-bg-card border border-orange-500/10 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-3 h-3 rounded-full bg-orange-400"></span>
+              <h3 class="text-white font-semibold text-lg">ZeroClaw &mdash; The Rust Middle Ground</h3>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              ZeroClaw bridges the gap between NullClaw's extreme minimalism and OpenClaw's feature richness.
+              Built in Rust, it benefits from memory safety guarantees and a mature ecosystem of crates.
+              At 3.4 MB and under 5 MB of RAM, it is still remarkably lean compared to traditional
+              frameworks. Its workspace-scoped security model with localhost-only defaults provides
+              a solid baseline for production deployments. ZeroClaw is an excellent choice for teams
+              already invested in the Rust ecosystem who want strong performance without the constraints
+              of Zig's younger toolchain.
+            </p>
+          </div>
+
+          <!-- OpenClaw Analysis -->
+          <div class="bg-bg-card border border-emerald-500/10 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+              <h3 class="text-white font-semibold text-lg">OpenClaw &mdash; The Feature-Rich Ecosystem</h3>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              OpenClaw takes the opposite approach: maximize developer experience and extensibility at the
+              cost of resource efficiency. Built on TypeScript with a full Node.js runtime, it offers
+              the richest plugin ecosystem, the most integrations, and the lowest barrier to entry for
+              web developers. However, its ~28 MB footprint and 1 GB+ RAM usage make it impractical for
+              constrained environments. More critically, CVE-2026-25253 exposed a remote code execution
+              vulnerability in its DM pairing mechanism, highlighting the security risks of its more
+              permissive architecture. OpenClaw is best suited for teams that prioritize ecosystem breadth
+              and rapid prototyping over operational efficiency.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== ADVANCED MODE ========== -->
+      <section id="advanced-mode">
+        <p class="text-cyan text-xs font-semibold tracking-widest uppercase mb-3">Chapter 04</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">Advanced Mode</h2>
+        <p class="text-gray-400 mb-10 leading-relaxed">
+          Unlock NullClaw's full potential with daemon mode, scheduled tasks, full autonomy, and its
+          sophisticated memory and security systems.
+        </p>
+
+        <!-- Daemon + Cron -->
+        <h3 class="text-xl font-semibold text-white mb-4">Daemon Mode &amp; Cron Scheduler</h3>
+        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+          Running <code class="text-cyan/80 bg-cyan/5 px-1.5 py-0.5 rounded text-xs font-mono">nullclaw daemon</code>
+          launches NullClaw as a persistent background process with a built-in cron scheduler. This
+          enables always-on operation: scheduled code reviews, periodic report generation, automated
+          monitoring, and proactive task execution &mdash; all without human intervention.
+        </p>
+
+        <!-- Full Autonomy Config -->
+        <h3 class="text-xl font-semibold text-white mb-4">Full Autonomy Configuration</h3>
+        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+          For advanced users who want NullClaw to operate with complete autonomy, the configuration
+          supports unrestricted command and path access:
+        </p>
+        <div class="bg-bg-code border border-border rounded-xl overflow-hidden mb-8">
+          <div class="flex items-center justify-between px-4 py-2.5 border-b border-border">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+            </div>
+            <span class="text-[11px] text-gray-600 font-mono">config.json</span>
+          </div>
+          <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">{
+  <span class="text-purple">"autonomy"</span>: {
+    <span class="text-purple">"level"</span>: <span class="text-emerald-400">"full"</span>,
+    <span class="text-purple">"allowed_commands"</span>: [<span class="text-emerald-400">"*"</span>],
+    <span class="text-purple">"allowed_paths"</span>: [<span class="text-emerald-400">"*"</span>]
+  }
+}</code></pre>
+        </div>
+
+        <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-5 mb-10">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            <p class="text-yellow-200/80 text-sm leading-relaxed">
+              <strong class="text-yellow-300">Warning:</strong> Full autonomy mode grants unrestricted
+              system access. Only enable this in sandboxed environments or when you fully understand
+              the implications. Use Landlock/Firejail/Docker isolation as a safety net.
+            </p>
+          </div>
+        </div>
+
+        <!-- Memory System -->
+        <h3 class="text-xl font-semibold text-white mb-4">Memory System</h3>
+        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+          NullClaw's memory architecture combines <strong class="text-white">SQLite</strong> for
+          structured storage with <strong class="text-white">FTS5</strong> full-text search and
+          <strong class="text-white">cosine vector similarity</strong>. Retrieval uses a
+          <strong class="text-white">0.7 / 0.3 blend</strong> &mdash; 70% semantic (vector) relevance
+          and 30% keyword (FTS5) relevance &mdash; giving you the best of both retrieval paradigms
+          without requiring an external vector database.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mb-10">
+          <div class="bg-bg-card border border-border rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-white mb-1">SQLite</p>
+            <p class="text-xs text-gray-500">Structured Storage</p>
+          </div>
+          <div class="bg-bg-card border border-border rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-white mb-1">FTS5</p>
+            <p class="text-xs text-gray-500">Full-Text Search</p>
+          </div>
+          <div class="bg-bg-card border border-border rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-white mb-1">0.7 / 0.3</p>
+            <p class="text-xs text-gray-500">Vector / Keyword Blend</p>
+          </div>
+        </div>
+
+        <!-- Security Architecture -->
+        <h3 class="text-xl font-semibold text-white mb-4">Security Architecture</h3>
+        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+          NullClaw implements a defense-in-depth security model with multiple isolation layers:
+        </p>
+        <ul class="space-y-3 ml-5 text-sm text-gray-400">
+          <li class="flex items-start gap-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white">ChaCha20-Poly1305</strong> &mdash; All secrets and sensitive configuration are encrypted at rest using authenticated encryption.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white">Landlock</strong> &mdash; Linux kernel-level filesystem sandboxing restricts which paths NullClaw can access.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white">Firejail</strong> &mdash; Process-level sandboxing with seccomp-bpf filters for system call restriction.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white">Bubblewrap</strong> &mdash; Unprivileged namespace sandboxing for user-space isolation.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white">Docker</strong> &mdash; Full container isolation for the most restrictive deployment scenarios.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ========== AI CEO CLONE ========== -->
+      <section id="ai-ceo-clone">
+        <p class="text-cyan text-xs font-semibold tracking-widest uppercase mb-3">Chapter 05</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">Building Your AI CEO Clone</h2>
+        <p class="text-gray-400 mb-10 leading-relaxed">
+          The concept of an AI CEO clone is an autonomous decision-making agent that can strategize,
+          delegate, and execute &mdash; operating as a tireless digital executive. Here are three
+          approaches, from conceptual to fully realized.
+        </p>
+
+        <!-- Approach 1: Conceptual -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan/20 to-purple/20 border border-cyan/10 flex items-center justify-center text-white font-bold text-sm">01</div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">Conceptual: What Is an AI CEO Clone?</h3>
+              <p class="text-gray-500 text-xs">The idea</p>
+            </div>
+          </div>
+          <div class="ml-[52px]">
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              An AI CEO clone is not a chatbot that answers questions. It is an autonomous agent with
+              persistent memory, scheduled actions, and the authority to make decisions and execute on
+              them. Think of it as the difference between a calculator and an accountant &mdash; one
+              responds to inputs, the other proactively manages outcomes.
+            </p>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              The ideal AI CEO clone can: analyze business metrics on a schedule, generate and assign
+              tasks, monitor progress, write and review code, produce reports, and adapt its strategy
+              based on outcomes &mdash; all autonomously, 24/7, without human prompting.
+            </p>
+          </div>
+        </div>
+
+        <!-- Approach 2: NullClaw Advanced -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan/20 to-purple/20 border border-cyan/10 flex items-center justify-center text-white font-bold text-sm">02</div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">NullClaw Advanced: Daemon + Cron + Full Autonomy</h3>
+              <p class="text-gray-500 text-xs">Always-on operation</p>
+            </div>
+          </div>
+          <div class="ml-[52px]">
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              With NullClaw's daemon mode, cron scheduler, and full autonomy configuration, you can
+              build a self-operating AI agent that runs continuously in the background. The daemon
+              maintains persistent state, the cron scheduler triggers periodic tasks (daily standups,
+              weekly reports, hourly monitoring), and full autonomy grants unrestricted tool access.
+            </p>
+            <div class="bg-bg-code border border-border rounded-xl overflow-hidden">
+              <div class="flex items-center justify-between px-4 py-2.5 border-b border-border">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+                </div>
+                <span class="text-[11px] text-gray-600 font-mono">ceo-config.json</span>
+              </div>
+              <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">{
+  <span class="text-purple">"autonomy"</span>: {
+    <span class="text-purple">"level"</span>: <span class="text-emerald-400">"full"</span>,
+    <span class="text-purple">"allowed_commands"</span>: [<span class="text-emerald-400">"*"</span>],
+    <span class="text-purple">"allowed_paths"</span>: [<span class="text-emerald-400">"*"</span>]
+  },
+  <span class="text-purple">"cron"</span>: {
+    <span class="text-purple">"daily_standup"</span>: <span class="text-emerald-400">"0 9 * * *"</span>,
+    <span class="text-purple">"weekly_report"</span>: <span class="text-emerald-400">"0 17 * * 5"</span>,
+    <span class="text-purple">"code_review"</span>: <span class="text-emerald-400">"0 */4 * * *"</span>
+  },
+  <span class="text-purple">"memory"</span>: {
+    <span class="text-purple">"persistent"</span>: <span class="text-cyan">true</span>,
+    <span class="text-purple">"vector_weight"</span>: <span class="text-cyan">0.7</span>,
+    <span class="text-purple">"keyword_weight"</span>: <span class="text-cyan">0.3</span>
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approach 3: Claw-Empire -->
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan/20 to-purple/20 border border-cyan/10 flex items-center justify-center text-white font-bold text-sm">03</div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">Claw-Empire: The Virtual AI Company</h3>
+              <p class="text-gray-500 text-xs">Full simulation</p>
+            </div>
+          </div>
+          <div class="ml-[52px]">
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              Claw-Empire takes the AI CEO concept to its logical conclusion: a complete virtual AI
+              company simulator. It provides a pixel-art office environment where AI agents occupy
+              roles (CEO, CTO, developers, analysts), collaborate on tasks via a Kanban board, and
+              report metrics through a KPI dashboard.
+            </p>
+
+            <div class="space-y-4 mb-6">
+              <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+                <h4 class="text-white font-medium mb-2">CEO Directives (<code class="text-cyan text-xs font-mono">$</code>-prefix commands)</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                  Issue high-level directives to your AI company using <code class="text-cyan/80 bg-cyan/5 px-1.5 py-0.5 rounded text-xs font-mono">$</code>-prefixed
+                  commands. The AI CEO interprets these as strategic mandates and delegates execution
+                  across the organization.
+                </p>
+              </div>
+
+              <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+                <h4 class="text-white font-medium mb-2">6 Office Packs</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                  Pre-configured team compositions for different workflows:
+                </p>
+                <div class="flex flex-wrap gap-2 mt-3">
+                  <span class="px-3 py-1 rounded-full bg-cyan/10 text-cyan text-xs font-medium border border-cyan/20">Dev</span>
+                  <span class="px-3 py-1 rounded-full bg-purple/10 text-purple text-xs font-medium border border-purple/20">Report</span>
+                  <span class="px-3 py-1 rounded-full bg-emerald-400/10 text-emerald-400 text-xs font-medium border border-emerald-400/20">Research</span>
+                  <span class="px-3 py-1 rounded-full bg-orange-400/10 text-orange-400 text-xs font-medium border border-orange-400/20">Novel</span>
+                  <span class="px-3 py-1 rounded-full bg-pink-400/10 text-pink-400 text-xs font-medium border border-pink-400/20">Video</span>
+                  <span class="px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 text-xs font-medium border border-yellow-400/20">Roleplay</span>
+                </div>
+              </div>
+
+              <div class="bg-bg-card border border-border rounded-xl p-5 card-glow transition-all duration-300">
+                <h4 class="text-white font-medium mb-2">Pixel-Art Office, Kanban &amp; KPI Dashboard</h4>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                  A visual workspace where you can watch your AI team operate in real-time. The pixel-art
+                  office shows agents at their desks, the Kanban board tracks task progress across columns,
+                  and the KPI dashboard surfaces key performance metrics &mdash; code commits, reports
+                  generated, tasks completed, and strategic outcomes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- end article body -->
+
+    <!-- Divider -->
+    <div class="glow-line max-w-xl mx-auto"></div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="max-w-3xl mx-auto px-6 py-16">
+      <div class="grid sm:grid-cols-3 gap-8 mb-12">
+        <!-- Brand -->
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">
+            <span>Null</span><span class="text-cyan">Claw</span>
+          </h3>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            The 678 KB AI revolution. Zero dependencies, infinite possibilities.
+          </p>
+        </div>
+
+        <!-- Links -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Resources</p>
+          <ul class="space-y-2">
+            <li>
+              <a href="https://github.com/nullclaw/nullclaw" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-cyan transition-colors text-sm inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href="https://nullclaw.org" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-cyan transition-colors text-sm inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                nullclaw.org
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Claw-Empire -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Related</p>
+          <ul class="space-y-2">
+            <li>
+              <a href="https://github.com/GreenSheep01201/claw-empire" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-cyan transition-colors text-sm inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                Claw-Empire
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-gray-600 text-xs">
+          &copy; 2026 NullClaw Contributors. Open source under the MIT License.
+        </p>
+        <p class="text-gray-700 text-xs">
+          Built with Zig &middot; Documented with care
+        </p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- TOC ACTIVE STATE SCRIPT -->
+  <!-- ============================================================ -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link');
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.getAttribute('id');
+              tocLinks.forEach((link) => {
+                link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+              });
+            }
+          });
+        },
+        {
+          rootMargin: '-20% 0px -60% 0px',
+          threshold: 0,
+        }
+      );
+
+      sections.forEach((section) => observer.observe(section));
+    });
+  </script>
+
+</body>
+</html>

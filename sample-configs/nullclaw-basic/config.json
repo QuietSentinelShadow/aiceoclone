@@ -1,0 +1,40 @@
+{
+  "models": {
+    "providers": {
+      "openrouter": {
+        "api_key": "sk-or-YOUR_KEY_HERE",
+        "base_url": "https://openrouter.ai/api/v1"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter:google/gemini-2.5-flash"
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "bot_token": "YOUR_TELEGRAM_BOT_TOKEN",
+      "allow_from": [123456789]
+    }
+  },
+  "memory": {
+    "backend": "sqlite",
+    "embedding_provider": "openrouter",
+    "search_weights": {
+      "vector": 0.7,
+      "keyword": 0.3
+    }
+  },
+  "security": {
+    "sandbox_backend": "auto",
+    "workspace_path": "~/.nullclaw/workspace"
+  },
+  "autonomy": {
+    "level": "interactive",
+    "allowed_commands": ["ls", "cat", "echo"],
+    "allowed_paths": ["~/.nullclaw/workspace"]
+  }
+}
