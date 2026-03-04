@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 // --- REUSABLE HELPER COMPONENTS ---
 
@@ -1222,34 +1223,35 @@ const OutroScene: React.FC = () => {
 
 // --- MAIN COMPOSITION ---
 
-const SCENE_DURATION = 8 * FPS; // 240 frames = 8 seconds per scene
-
 export const Professional: React.FC = () => {
-  const scenes: { component: React.FC; audio: string }[] = [
-    { component: TitleScene, audio: "audio/professional/pro-01-intro.mp3" },
-    { component: ArchitectureScene, audio: "audio/professional/pro-02-arch.mp3" },
-    { component: SetupScene, audio: "audio/professional/pro-03-setup.mp3" },
-    { component: ProviderGridScene, audio: "audio/professional/pro-04-providers.mp3" },
-    { component: MemoryScene, audio: "audio/professional/pro-05-memory.mp3" },
-    { component: SecurityScene, audio: "audio/professional/pro-06-security.mp3" },
-    { component: BenchmarkScene, audio: "audio/professional/pro-07-comparison.mp3" },
-    { component: ConfigScene, audio: "audio/professional/pro-08-advanced.mp3" },
-    { component: CeoCloneScene, audio: "audio/professional/pro-09-ceo.mp3" },
-    { component: OutroScene, audio: "audio/professional/pro-10-outro.mp3" },
+  const d = audioDurations.durations["professional"] as Record<string, { durationFrames: number }>;
+  const scenes: { key: string; component: React.FC }[] = [
+    { key: "pro-01-intro", component: TitleScene },
+    { key: "pro-02-arch", component: ArchitectureScene },
+    { key: "pro-03-setup", component: SetupScene },
+    { key: "pro-04-providers", component: ProviderGridScene },
+    { key: "pro-05-memory", component: MemoryScene },
+    { key: "pro-06-security", component: SecurityScene },
+    { key: "pro-07-comparison", component: BenchmarkScene },
+    { key: "pro-08-advanced", component: ConfigScene },
+    { key: "pro-09-ceo", component: CeoCloneScene },
+    { key: "pro-10-outro", component: OutroScene },
   ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      {scenes.map(({ component: SceneComponent, audio }, index) => (
-        <Sequence
-          key={index}
-          from={index * SCENE_DURATION}
-          durationInFrames={SCENE_DURATION}
-        >
-          <Audio src={staticFile(audio)} />
-          <SceneComponent />
-        </Sequence>
-      ))}
+      {scenes.map(({ key, component: SceneComponent }) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/professional/${key}.mp3`)} />
+            <SceneComponent />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

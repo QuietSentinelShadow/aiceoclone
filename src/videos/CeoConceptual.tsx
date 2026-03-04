@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 // --- SHARED COMPONENTS ---
 
@@ -814,53 +815,30 @@ const OutroScene: React.FC = () => {
 // --- MAIN COMPOSITION ---
 
 export const CeoConceptual: React.FC = () => {
-  const sceneDuration = 250;
+  const d = audioDurations.durations["ceo-conceptual"] as Record<string, { durationFrames: number }>;
+  const scenes = [
+    { key: "ceo-c-01-intro", Scene: TitleScene },
+    { key: "ceo-c-02-what", Scene: DefinitionScene },
+    { key: "ceo-c-03-why-nullclaw", Scene: WhyNullClawScene },
+    { key: "ceo-c-04-how", Scene: HowItWorksScene },
+    { key: "ceo-c-05-usecases", Scene: UseCasesScene },
+    { key: "ceo-c-06-outro", Scene: OutroScene },
+  ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      {/* Scene 1: Title */}
-      <Sequence from={0} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/ceo-conceptual/ceo-c-01-intro.mp3")} />
-        <TitleScene />
-      </Sequence>
-
-      {/* Scene 2: Definition */}
-      <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-02-what.mp3")}
-        />
-        <DefinitionScene />
-      </Sequence>
-
-      {/* Scene 3: Why NullClaw */}
-      <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-03-why-nullclaw.mp3")}
-        />
-        <WhyNullClawScene />
-      </Sequence>
-
-      {/* Scene 4: How It Works */}
-      <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-04-how.mp3")}
-        />
-        <HowItWorksScene />
-      </Sequence>
-
-      {/* Scene 5: Use Cases */}
-      <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-conceptual/ceo-c-05-usecases.mp3")}
-        />
-        <UseCasesScene />
-      </Sequence>
-
-      {/* Scene 6: Outro */}
-      <Sequence from={sceneDuration * 5} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/ceo-conceptual/ceo-c-06-outro.mp3")} />
-        <OutroScene />
-      </Sequence>
+      {scenes.map(({ key, Scene }) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/ceo-conceptual/${key}.mp3`)} />
+            <Scene />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

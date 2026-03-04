@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 const Section: React.FC<{
   children: React.ReactNode;
@@ -545,44 +546,32 @@ const OutroScene: React.FC = () => {
 // --- MAIN COMPOSITION ---
 
 export const FiveYearOld: React.FC = () => {
-  const sceneDuration = 5 * FPS; // 5 seconds per scene
+  const d = audioDurations.durations["five-year-old"] as Record<string, { durationFrames: number }>;
+  const scenes = [
+    { key: "fyo-01-intro", Scene: IntroScene },
+    { key: "fyo-02-tiny", Scene: TinyRobotScene },
+    { key: "fyo-03-fast", Scene: FastScene },
+    { key: "fyo-04-talks", Scene: TalksScene },
+    { key: "fyo-05-remembers", Scene: RemembersScene },
+    { key: "fyo-06-comparison", Scene: ComparisonScene },
+    { key: "fyo-07-ceo", Scene: CeoScene },
+    { key: "fyo-08-outro", Scene: OutroScene },
+  ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      <Sequence from={0} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-01-intro.mp3")} />
-        <IntroScene />
-      </Sequence>
-      <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-02-tiny.mp3")} />
-        <TinyRobotScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-03-fast.mp3")} />
-        <FastScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-04-talks.mp3")} />
-        <TalksScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-05-remembers.mp3")} />
-        <RemembersScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 5} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/five-year-old/fyo-06-comparison.mp3")}
-        />
-        <ComparisonScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 6} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-07-ceo.mp3")} />
-        <CeoScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 7} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/five-year-old/fyo-08-outro.mp3")} />
-        <OutroScene />
-      </Sequence>
+      {scenes.map(({ key, Scene }) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/five-year-old/${key}.mp3`)} />
+            <Scene />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

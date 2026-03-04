@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 // --- HELPER COMPONENTS ---
 
@@ -864,51 +865,31 @@ const CtaScene: React.FC = () => {
 // --- MAIN COMPOSITION ---
 
 export const Influencer: React.FC = () => {
-  const sceneDuration = 5 * FPS; // 150 frames = 5 seconds
+  const d = audioDurations.durations["influencer"] as Record<string, { durationFrames: number }>;
+  const scenes = [
+    { key: "inf-01-hook", Scene: HookScene },
+    { key: "inf-02-speed", Scene: SpeedScene },
+    { key: "inf-03-board", Scene: DollarScene },
+    { key: "inf-04-channels", Scene: ChannelsScene },
+    { key: "inf-05-comparison", Scene: NumbersScene },
+    { key: "inf-06-ceo", Scene: CeoScene },
+    { key: "inf-07-cta", Scene: CtaScene },
+  ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      {/* Scene 1: Hook */}
-      <Sequence from={0} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-01-hook.mp3")} />
-        <HookScene />
-      </Sequence>
-
-      {/* Scene 2: Speed */}
-      <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-02-speed.mp3")} />
-        <SpeedScene />
-      </Sequence>
-
-      {/* Scene 3: Dollar */}
-      <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-03-board.mp3")} />
-        <DollarScene />
-      </Sequence>
-
-      {/* Scene 4: Channels */}
-      <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-04-channels.mp3")} />
-        <ChannelsScene />
-      </Sequence>
-
-      {/* Scene 5: Numbers */}
-      <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-05-comparison.mp3")} />
-        <NumbersScene />
-      </Sequence>
-
-      {/* Scene 6: CEO */}
-      <Sequence from={sceneDuration * 5} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-06-ceo.mp3")} />
-        <CeoScene />
-      </Sequence>
-
-      {/* Scene 7: CTA */}
-      <Sequence from={sceneDuration * 6} durationInFrames={sceneDuration}>
-        <Audio src={staticFile("audio/influencer/inf-07-cta.mp3")} />
-        <CtaScene />
-      </Sequence>
+      {scenes.map(({ key, Scene }) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/influencer/${key}.mp3`)} />
+            <Scene />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

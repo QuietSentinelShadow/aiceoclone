@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 const FadeIn: React.FC<{
   children: React.ReactNode;
@@ -1029,72 +1030,34 @@ const OutroScene: React.FC = () => {
 // ---- MAIN COMPOSITION ----
 
 export const CeoNullclawAdvanced: React.FC = () => {
-  const sceneDuration = 7 * FPS; // 7 seconds per scene
+  const d = audioDurations.durations["ceo-nullclaw-advanced"] as Record<string, { durationFrames: number }>;
+  const scenes = [
+    { key: "ceo-a-01-intro", Scene: TitleScene },
+    { key: "ceo-a-02-install", Scene: InstallScene },
+    { key: "ceo-a-03-onboard", Scene: OnboardScene },
+    { key: "ceo-a-04-config", Scene: ConfigScene },
+    { key: "ceo-a-05-channels", Scene: ChannelsScene },
+    { key: "ceo-a-06-memory", Scene: MemoryScene },
+    { key: "ceo-a-07-cron", Scene: CronScene },
+    { key: "ceo-a-08-daemon", Scene: DaemonScene },
+    { key: "ceo-a-09-verify", Scene: VerifyScene },
+    { key: "ceo-a-10-outro", Scene: OutroScene },
+  ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      <Sequence from={0} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-01-intro.mp3")}
-        />
-        <TitleScene />
-      </Sequence>
-      <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-02-install.mp3")}
-        />
-        <InstallScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-03-onboard.mp3")}
-        />
-        <OnboardScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-04-config.mp3")}
-        />
-        <ConfigScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile(
-            "audio/ceo-nullclaw-advanced/ceo-a-05-channels.mp3"
-          )}
-        />
-        <ChannelsScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 5} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-06-memory.mp3")}
-        />
-        <MemoryScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 6} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-07-cron.mp3")}
-        />
-        <CronScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 7} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-08-daemon.mp3")}
-        />
-        <DaemonScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 8} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-09-verify.mp3")}
-        />
-        <VerifyScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 9} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-nullclaw-advanced/ceo-a-10-outro.mp3")}
-        />
-        <OutroScene />
-      </Sequence>
+      {scenes.map(({ key, Scene }) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/ceo-nullclaw-advanced/${key}.mp3`)} />
+            <Scene />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

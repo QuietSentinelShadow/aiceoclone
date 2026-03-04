@@ -1,0 +1,228 @@
+{
+  "durations": {
+    "ceo-claw-empire": {
+      "ceo-e-01-intro": {
+        "durationSeconds": 10.54,
+        "durationFrames": 362
+      },
+      "ceo-e-02-what": {
+        "durationSeconds": 18.72,
+        "durationFrames": 607
+      },
+      "ceo-e-03-install": {
+        "durationSeconds": 20.16,
+        "durationFrames": 650
+      },
+      "ceo-e-04-setup": {
+        "durationSeconds": 21.46,
+        "durationFrames": 689
+      },
+      "ceo-e-05-directives": {
+        "durationSeconds": 21.58,
+        "durationFrames": 693
+      },
+      "ceo-e-06-packs": {
+        "durationSeconds": 21.31,
+        "durationFrames": 685
+      },
+      "ceo-e-07-features": {
+        "durationSeconds": 19.3,
+        "durationFrames": 624
+      },
+      "ceo-e-08-messenger": {
+        "durationSeconds": 19.51,
+        "durationFrames": 631
+      },
+      "ceo-e-09-workflow": {
+        "durationSeconds": 21.7,
+        "durationFrames": 696
+      },
+      "ceo-e-10-outro": {
+        "durationSeconds": 17.18,
+        "durationFrames": 561
+      }
+    },
+    "ceo-conceptual": {
+      "ceo-c-01-intro": {
+        "durationSeconds": 13.27,
+        "durationFrames": 444
+      },
+      "ceo-c-02-what": {
+        "durationSeconds": 18.77,
+        "durationFrames": 609
+      },
+      "ceo-c-03-why-nullclaw": {
+        "durationSeconds": 29.33,
+        "durationFrames": 925
+      },
+      "ceo-c-04-how": {
+        "durationSeconds": 21.24,
+        "durationFrames": 683
+      },
+      "ceo-c-05-usecases": {
+        "durationSeconds": 22.7,
+        "durationFrames": 727
+      },
+      "ceo-c-06-outro": {
+        "durationSeconds": 9.31,
+        "durationFrames": 325
+      }
+    },
+    "ceo-nullclaw-advanced": {
+      "ceo-a-01-intro": {
+        "durationSeconds": 11.74,
+        "durationFrames": 398
+      },
+      "ceo-a-02-install": {
+        "durationSeconds": 12.48,
+        "durationFrames": 420
+      },
+      "ceo-a-03-onboard": {
+        "durationSeconds": 19.49,
+        "durationFrames": 630
+      },
+      "ceo-a-04-config": {
+        "durationSeconds": 17.98,
+        "durationFrames": 585
+      },
+      "ceo-a-05-channels": {
+        "durationSeconds": 15.55,
+        "durationFrames": 512
+      },
+      "ceo-a-06-memory": {
+        "durationSeconds": 21.29,
+        "durationFrames": 684
+      },
+      "ceo-a-07-cron": {
+        "durationSeconds": 19.18,
+        "durationFrames": 621
+      },
+      "ceo-a-08-daemon": {
+        "durationSeconds": 18.67,
+        "durationFrames": 606
+      },
+      "ceo-a-09-verify": {
+        "durationSeconds": 15.58,
+        "durationFrames": 513
+      },
+      "ceo-a-10-outro": {
+        "durationSeconds": 11.95,
+        "durationFrames": 404
+      }
+    },
+    "five-year-old": {
+      "fyo-01-intro": {
+        "durationSeconds": 6.62,
+        "durationFrames": 244
+      },
+      "fyo-02-tiny": {
+        "durationSeconds": 19.06,
+        "durationFrames": 617
+      },
+      "fyo-03-fast": {
+        "durationSeconds": 12.31,
+        "durationFrames": 415
+      },
+      "fyo-04-talks": {
+        "durationSeconds": 16.66,
+        "durationFrames": 545
+      },
+      "fyo-05-remembers": {
+        "durationSeconds": 17.26,
+        "durationFrames": 563
+      },
+      "fyo-06-comparison": {
+        "durationSeconds": 20.09,
+        "durationFrames": 648
+      },
+      "fyo-07-ceo": {
+        "durationSeconds": 26.35,
+        "durationFrames": 836
+      },
+      "fyo-08-outro": {
+        "durationSeconds": 16.08,
+        "durationFrames": 528
+      }
+    },
+    "influencer": {
+      "inf-01-hook": {
+        "durationSeconds": 10.03,
+        "durationFrames": 346
+      },
+      "inf-02-speed": {
+        "durationSeconds": 10.42,
+        "durationFrames": 358
+      },
+      "inf-03-board": {
+        "durationSeconds": 10.27,
+        "durationFrames": 354
+      },
+      "inf-04-channels": {
+        "durationSeconds": 9.86,
+        "durationFrames": 341
+      },
+      "inf-05-comparison": {
+        "durationSeconds": 17.04,
+        "durationFrames": 557
+      },
+      "inf-06-ceo": {
+        "durationSeconds": 15.94,
+        "durationFrames": 524
+      },
+      "inf-07-cta": {
+        "durationSeconds": 9.53,
+        "durationFrames": 331
+      }
+    },
+    "professional": {
+      "pro-01-intro": {
+        "durationSeconds": 15.1,
+        "durationFrames": 498
+      },
+      "pro-02-arch": {
+        "durationSeconds": 15.82,
+        "durationFrames": 520
+      },
+      "pro-03-setup": {
+        "durationSeconds": 20.59,
+        "durationFrames": 663
+      },
+      "pro-04-providers": {
+        "durationSeconds": 16.42,
+        "durationFrames": 538
+      },
+      "pro-05-memory": {
+        "durationSeconds": 21,
+        "durationFrames": 675
+      },
+      "pro-06-security": {
+        "durationSeconds": 24.46,
+        "durationFrames": 779
+      },
+      "pro-07-comparison": {
+        "durationSeconds": 27.19,
+        "durationFrames": 861
+      },
+      "pro-08-advanced": {
+        "durationSeconds": 25.73,
+        "durationFrames": 817
+      },
+      "pro-09-ceo": {
+        "durationSeconds": 19.32,
+        "durationFrames": 625
+      },
+      "pro-10-outro": {
+        "durationSeconds": 11.78,
+        "durationFrames": 399
+      }
+    }
+  },
+  "videoTotals": {
+    "ceo-claw-empire": 6198,
+    "ceo-conceptual": 3713,
+    "ceo-nullclaw-advanced": 5373,
+    "five-year-old": 4396,
+    "influencer": 2811,
+    "professional": 6375
+  }
+}

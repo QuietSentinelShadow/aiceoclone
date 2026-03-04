@@ -10,6 +10,7 @@ import {
   spring,
 } from "remotion";
 import { COLORS, FONTS, FPS } from "../lib/constants";
+import audioDurations from "../audio-durations.json";
 
 const FadeIn: React.FC<{
   children: React.ReactNode;
@@ -919,70 +920,34 @@ const OutroScene: React.FC = () => {
 // ---- MAIN COMPOSITION ----
 
 export const CeoClawEmpire: React.FC = () => {
-  const sceneDuration = 7 * FPS; // 7 seconds per scene
+  const d = audioDurations.durations["ceo-claw-empire"] as Record<string, { durationFrames: number }>;
+  const scenes = [
+    { key: "ceo-e-01-intro", Scene: TitleScene },
+    { key: "ceo-e-02-what", Scene: WhatScene },
+    { key: "ceo-e-03-install", Scene: SetupScene },
+    { key: "ceo-e-04-setup", Scene: DirectivesScene },
+    { key: "ceo-e-05-directives", Scene: OfficePacksScene },
+    { key: "ceo-e-06-packs", Scene: DashboardScene },
+    { key: "ceo-e-07-features", Scene: MessengerScene },
+    { key: "ceo-e-08-messenger", Scene: WorkflowScene },
+    { key: "ceo-e-09-workflow", Scene: OutroScene },
+    { key: "ceo-e-10-outro", Scene: OutroScene },
+  ];
 
+  let offset = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
-      <Sequence from={0} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-01-intro.mp3")}
-        />
-        <TitleScene />
-      </Sequence>
-      <Sequence from={sceneDuration} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-02-what.mp3")}
-        />
-        <WhatScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 2} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-03-install.mp3")}
-        />
-        <SetupScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 3} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-04-setup.mp3")}
-        />
-        <DirectivesScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 4} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-05-directives.mp3")}
-        />
-        <OfficePacksScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 5} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-06-packs.mp3")}
-        />
-        <DashboardScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 6} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-07-features.mp3")}
-        />
-        <MessengerScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 7} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-08-messenger.mp3")}
-        />
-        <WorkflowScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 8} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-09-workflow.mp3")}
-        />
-        <OutroScene />
-      </Sequence>
-      <Sequence from={sceneDuration * 9} durationInFrames={sceneDuration}>
-        <Audio
-          src={staticFile("audio/ceo-claw-empire/ceo-e-10-outro.mp3")}
-        />
-        <OutroScene />
-      </Sequence>
+      {scenes.map(({ key, Scene }, index) => {
+        const frames = d[key]?.durationFrames ?? 300;
+        const from = offset;
+        offset += frames;
+        return (
+          <Sequence key={key} from={from} durationInFrames={frames}>
+            <Audio src={staticFile(`audio/ceo-claw-empire/${key}.mp3`)} />
+            <Scene />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

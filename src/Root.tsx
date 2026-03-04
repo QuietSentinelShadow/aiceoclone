@@ -7,6 +7,9 @@ import { CeoConceptual } from "./videos/CeoConceptual";
 import { CeoNullclawAdvanced } from "./videos/CeoNullclawAdvanced";
 import { CeoClawEmpire } from "./videos/CeoClawEmpire";
 import { WIDTH, HEIGHT, FPS } from "./lib/constants";
+import audioDurations from "./audio-durations.json";
+
+const totals = audioDurations.videoTotals;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -14,7 +17,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="FiveYearOld"
         component={FiveYearOld}
-        durationInFrames={8 * 5 * FPS}
+        durationInFrames={totals["five-year-old"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -23,7 +26,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="Professional"
         component={Professional}
-        durationInFrames={10 * 8 * FPS}
+        durationInFrames={totals["professional"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -32,7 +35,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="Influencer"
         component={Influencer}
-        durationInFrames={7 * 5 * FPS}
+        durationInFrames={totals["influencer"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -41,7 +44,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="CeoConceptual"
         component={CeoConceptual}
-        durationInFrames={6 * 8 * FPS}
+        durationInFrames={totals["ceo-conceptual"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -50,7 +53,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="CeoNullclawAdvanced"
         component={CeoNullclawAdvanced}
-        durationInFrames={10 * 7 * FPS}
+        durationInFrames={totals["ceo-nullclaw-advanced"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -59,7 +62,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="CeoClawEmpire"
         component={CeoClawEmpire}
-        durationInFrames={10 * 7 * FPS}
+        durationInFrames={totals["ceo-claw-empire"]}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
