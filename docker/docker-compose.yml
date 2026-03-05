@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  nullclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile.nullclaw
+    container_name: nullclaw-content
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - nullclaw-data:/home/nullclaw/.nullclaw
+      - shared-output:/output
+    networks:
+      - content-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/nullclaw:size=64M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  pipeline:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.content-pipeline
+    container_name: content-pipeline
+    volumes:
+      - shared-output:/output
+    networks:
+      - content-net
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2.0"
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      nullclaw:
+        condition: service_healthy
+    profiles:
+      - render
+
+volumes:
+  nullclaw-data:
+  shared-output:
+
+networks:
+  content-net:
+    driver: bridge
+    internal: false
