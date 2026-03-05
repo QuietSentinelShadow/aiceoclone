@@ -7,3 +7,6 @@ dist/
 *.mp3
 *.wav
 docker/.env
+platform/api/node_modules/
+platform/api/data/
+platform/api/dist/
