@@ -1,0 +1,15 @@
+{
+  "name": "CEO Clone",
+  "description": "Autonomous AI executive with scheduling, reports, and decision-making",
+  "category": "executive",
+  "icon": "👔",
+  "config": {
+    "providers": { "default": { "name": "openrouter", "api_key_env": "API_KEY", "model": "anthropic/claude-opus-4" } },
+    "autonomy": { "level": "full", "confirm_dangerous": false },
+    "sandbox": { "allowed_commands": ["echo", "cat", "ls", "mkdir", "curl", "git"] },
+    "cron": [
+      { "name": "morning-briefing", "schedule": "0 8 * * *", "task": "Summarize overnight messages and prepare daily agenda" },
+      { "name": "weekly-report", "schedule": "0 17 * * 5", "task": "Compile weekly status report across all channels" }
+    ]
+  }
+}

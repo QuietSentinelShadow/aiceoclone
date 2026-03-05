@@ -1,0 +1,12 @@
+{
+  "name": "Research Analyst",
+  "description": "Web research, data analysis, report generation, and fact-checking",
+  "category": "research",
+  "icon": "🔍",
+  "config": {
+    "providers": { "default": { "name": "openrouter", "api_key_env": "API_KEY", "model": "google/gemini-2.5-pro" } },
+    "autonomy": { "level": "supervised" },
+    "sandbox": { "allowed_commands": ["echo", "cat", "ls", "curl"] },
+    "tools": { "web_search": true }
+  }
+}
