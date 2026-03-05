@@ -82,11 +82,11 @@ export default function Login() {
               id="password"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-[#0a0a0f] border border-[#2d2d44] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#00e5ff] transition-colors"
-              placeholder="Minimum 6 characters"
+              placeholder="Minimum 8 characters"
             />
           </div>
 

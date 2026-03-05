@@ -53,7 +53,7 @@ export default function InstanceDetail() {
   const fetchLogs = useCallback(async () => {
     try {
       const data = await api.getLogs(instanceId);
-      if (data && data.lines) setLogs(data.lines);
+      if (data && data.logs) setLogs(data.logs);
     } catch {
       // silently fail for logs
     }

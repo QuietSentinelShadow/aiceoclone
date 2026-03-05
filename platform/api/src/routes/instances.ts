@@ -39,7 +39,11 @@ router.post("/", async (req: AuthRequest, res) => {
   const config = JSON.parse(pack.config_template);
   config.providers.default.api_key_encrypted = encryptedKey;
 
-  const port = BASE_PORT + Math.floor(Math.random() * 5000);
+  const usedPorts = db.prepare("SELECT port FROM instances WHERE status != 'error'").all().map((r: any) => r.port);
+  let port: number;
+  do {
+    port = BASE_PORT + Math.floor(Math.random() * 5000);
+  } while (usedPorts.includes(port));
   const result = db.prepare(
     "INSERT INTO instances (user_id, name, pack_id, status, port, config_json) VALUES (?, ?, ?, 'creating', ?, ?)"
   ).run(req.userId, name, packId, port, JSON.stringify(config));
@@ -63,10 +67,14 @@ router.post("/:id/stop", async (req: AuthRequest, res) => {
   if (!instance) return res.status(404).json({ error: "Instance not found" });
   if (!instance.container_id) return res.status(400).json({ error: "No container" });
 
-  await stopContainer(instance.container_id);
-  db.prepare("UPDATE instances SET status = 'stopped' WHERE id = ?").run(instance.id);
-  db.prepare("INSERT INTO usage_logs (instance_id, event_type) VALUES (?, 'stopped')").run(instance.id);
-  res.json({ status: "stopped" });
+  try {
+    await stopContainer(instance.container_id);
+    db.prepare("UPDATE instances SET status = 'stopped' WHERE id = ?").run(instance.id);
+    db.prepare("INSERT INTO usage_logs (instance_id, event_type) VALUES (?, 'stopped')").run(instance.id);
+    res.json({ status: "stopped" });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to stop container", details: err.message });
+  }
 });
 
 router.post("/:id/start", async (req: AuthRequest, res) => {
