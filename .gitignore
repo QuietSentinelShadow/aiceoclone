@@ -11,3 +11,5 @@ platform/api/node_modules/
 platform/api/data/
 platform/api/dist/
 platform/.env
+platform/dashboard/node_modules/
+platform/dashboard/dist/
