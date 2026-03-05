@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Hardening Guide — AI CEO Clone</title>
+  <meta name="description" content="Security best practices for running NullClaw AI containers: threat model, container hardening, network security, application security, and a comprehensive hardening checklist." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0f',
+            bgLight: '#141422',
+            primary: '#00e5ff',
+            secondary: '#7c4dff',
+            accent: '#ff6d00',
+            card: '#1e1e2e',
+            cardBorder: '#2d2d44',
+          },
+          fontFamily: {
+            heading: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0f; }
+    .glow-cyan { text-shadow: 0 0 30px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15); }
+    .glow-border { box-shadow: 0 0 20px rgba(0,229,255,0.15), inset 0 0 20px rgba(0,229,255,0.05); }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+    .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+    pre code { display: block; overflow-x: auto; }
+    .step-number {
+      width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; font-weight: 700; font-size: 0.875rem; flex-shrink: 0;
+    }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem;
+      border-radius: 0.75rem; transition: background-color 0.2s;
+    }
+    .check-item:hover { background-color: rgba(30, 30, 46, 0.6); }
+    .check-icon {
+      width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.125rem;
+      border: 2px solid #2d2d44; border-radius: 0.25rem; display: flex;
+      align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .check-item:hover .check-icon { border-color: #00e5ff; }
+  </style>
+</head>
+<body class="font-heading text-white antialiased">
+
+  <!-- Back link -->
+  <nav class="px-6 py-4 max-w-5xl mx-auto">
+    <a href="../" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-primary transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Back to AI CEO Clone
+    </a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="relative px-6 pt-16 pb-24 overflow-hidden">
+    <div class="absolute top-10 left-1/4 w-72 h-72 bg-red-500/10 rounded-full blur-3xl pulse-glow"></div>
+    <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pulse-glow" style="animation-delay: 1.5s"></div>
+    <div class="relative z-10 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-card/80 border border-cardBorder rounded-full px-4 py-2 mb-6 text-sm text-gray-400 backdrop-blur">
+        <span class="w-2 h-2 bg-red-400 rounded-full pulse-glow"></span>
+        Security Guide
+      </div>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6">
+        <span class="text-white">Security</span><br />
+        <span class="glow-cyan text-primary">Hardening Guide</span>
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+        Defense-in-depth configuration for NullClaw containers. From kernel-level syscall filtering to application-layer encryption, every layer is hardened.
+      </p>
+    </div>
+  </section>
+
+  <!-- Table of Contents -->
+  <nav class="px-6 max-w-4xl mx-auto mb-16">
+    <div class="bg-card border border-cardBorder rounded-2xl p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-4">On This Page</h2>
+      <ol class="grid sm:grid-cols-2 gap-2 text-sm">
+        <li><a href="#threat-model" class="text-gray-400 hover:text-primary transition-colors">1. Threat Model</a></li>
+        <li><a href="#container-security" class="text-gray-400 hover:text-primary transition-colors">2. Container Security</a></li>
+        <li><a href="#network-security" class="text-gray-400 hover:text-primary transition-colors">3. Network Security</a></li>
+        <li><a href="#application-security" class="text-gray-400 hover:text-primary transition-colors">4. Application Security</a></li>
+        <li><a href="#nullclaw-specific" class="text-gray-400 hover:text-primary transition-colors">5. NullClaw-Specific</a></li>
+        <li><a href="#hardening-checklist" class="text-gray-400 hover:text-primary transition-colors">6. Hardening Checklist</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="px-6 max-w-4xl mx-auto space-y-20 pb-20">
+
+    <!-- 1. Threat Model -->
+    <section id="threat-model">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-red-500/20 text-red-400">1</span>
+        Threat Model
+      </h2>
+      <p class="text-gray-400 mb-6">Running an autonomous AI agent introduces unique attack surfaces. Our threat model considers four primary categories that must be addressed at every layer of the stack.</p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h3 class="font-bold">Unauthorized Access</h3>
+          </div>
+          <p class="text-sm text-gray-400">Attackers gaining access to the NullClaw gateway API, management dashboard, or underlying host. Mitigated through JWT authentication, network isolation, and Traefik ingress controls.</p>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+            </div>
+            <h3 class="font-bold">Container Escape</h3>
+          </div>
+          <p class="text-sm text-gray-400">An AI agent or exploited process breaking out of the container sandbox to reach the host. Mitigated through non-root users, seccomp profiles, capability dropping, and read-only filesystems.</p>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            </div>
+            <h3 class="font-bold">API Key Theft</h3>
+          </div>
+          <p class="text-sm text-gray-400">Exfiltration of AI provider API keys, which could result in financial abuse. Mitigated through environment variable injection, AES-256-GCM encryption at rest, and never storing keys in config files or images.</p>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="font-bold">Resource Abuse</h3>
+          </div>
+          <p class="text-sm text-gray-400">Runaway AI generation consuming excessive CPU, memory, disk, or API tokens. Mitigated through Docker resource limits, NullClaw resource caps, and per-user quotas in the SaaS platform.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Container Security -->
+    <section id="container-security">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-primary/20 text-primary">2</span>
+        Container Security
+      </h2>
+      <p class="text-gray-400 mb-6">Every container runs with the principle of least privilege. The compose file enforces non-root execution, read-only filesystems, dropped capabilities, and custom seccomp profiles.</p>
+
+      <!-- Non-root users -->
+      <h3 class="text-lg font-bold mb-3">Non-root Users</h3>
+      <p class="text-gray-400 text-sm mb-4">Both containers create dedicated service users at build time. The Dockerfile uses a numeric UID/GID (1000) so the container never needs root privileges.</p>
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-8">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">Dockerfile.nullclaw</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-gray-500"># Create non-root user</span>
+<span class="text-secondary">RUN</span> addgroup -g 1000 nullclaw && \
+    adduser -u 1000 -G nullclaw -D nullclaw
+
+<span class="text-gray-500"># Switch to non-root before CMD</span>
+<span class="text-secondary">USER</span> <span class="text-primary">nullclaw</span></code></pre>
+      </div>
+
+      <!-- Read-only filesystem -->
+      <h3 class="text-lg font-bold mb-3">Read-only Filesystem</h3>
+      <p class="text-gray-400 text-sm mb-4">The NullClaw container runs with a read-only root filesystem. Only a small tmpfs is mounted for scratch operations, limited to 64 MB.</p>
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-8">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">docker-compose.yml (nullclaw service)</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-primary">read_only</span>: <span class="text-accent">true</span>
+<span class="text-primary">tmpfs</span>:
+  - <span class="text-green-400">/tmp/nullclaw:size=64M</span></code></pre>
+      </div>
+
+      <!-- Capability dropping -->
+      <h3 class="text-lg font-bold mb-3">Capability Dropping &amp; Privilege Escalation Prevention</h3>
+      <p class="text-gray-400 text-sm mb-4">The <code class="font-mono text-primary bg-bgLight px-1.5 py-0.5 rounded text-xs">no-new-privileges</code> flag prevents any process inside the container from gaining additional privileges through setuid binaries or other escalation vectors.</p>
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-8">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">docker-compose.yml (both services)</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-primary">security_opt</span>:
+  - <span class="text-green-400">no-new-privileges:true</span>
+
+<span class="text-primary">deploy</span>:
+  <span class="text-primary">resources</span>:
+    <span class="text-primary">limits</span>:
+      <span class="text-gray-400">memory</span>: <span class="text-accent">256M</span>
+      <span class="text-gray-400">cpus</span>: <span class="text-green-400">"0.5"</span></code></pre>
+      </div>
+
+      <!-- Seccomp profiles -->
+      <h3 class="text-lg font-bold mb-3">Seccomp Profiles</h3>
+      <p class="text-gray-400 text-sm mb-4">A custom seccomp profile whitelists only the syscalls NullClaw actually needs. The default action is <code class="font-mono text-xs bg-bgLight px-1 rounded">SCMP_ACT_ERRNO</code>, which blocks all unlisted syscalls and returns an error instead of killing the process.</p>
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-4">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">docker/security/seccomp-nullclaw.json (excerpt)</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm leading-relaxed">{
+  <span class="text-primary">"defaultAction"</span>: <span class="text-green-400">"SCMP_ACT_ERRNO"</span>,
+  <span class="text-primary">"architectures"</span>: [<span class="text-green-400">"SCMP_ARCH_X86_64"</span>, <span class="text-green-400">"SCMP_ARCH_AARCH64"</span>],
+  <span class="text-primary">"syscalls"</span>: [{
+    <span class="text-gray-400">"names"</span>: [
+      <span class="text-green-400">"read"</span>, <span class="text-green-400">"write"</span>, <span class="text-green-400">"open"</span>, <span class="text-green-400">"close"</span>,
+      <span class="text-green-400">"socket"</span>, <span class="text-green-400">"connect"</span>, <span class="text-green-400">"bind"</span>, <span class="text-green-400">"listen"</span>,
+      <span class="text-green-400">"epoll_create"</span>, <span class="text-green-400">"epoll_ctl"</span>, <span class="text-green-400">"epoll_wait"</span>,
+      <span class="text-gray-500">/* ...~60 total allowed syscalls... */</span>
+    ],
+    <span class="text-gray-400">"action"</span>: <span class="text-green-400">"SCMP_ACT_ALLOW"</span>
+  }]
+}</code></pre>
+      </div>
+      <p class="text-xs text-gray-500 mb-2">To apply the profile, add to the NullClaw service:</p>
+      <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+        <pre class="p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">security_opt:
+  - no-new-privileges:true
+  - seccomp=security/seccomp-nullclaw.json</code></pre>
+      </div>
+    </section>
+
+    <!-- 3. Network Security -->
+    <section id="network-security">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-secondary/20 text-secondary">3</span>
+        Network Security
+      </h2>
+      <p class="text-gray-400 mb-6">Network-level isolation is the first line of defense. Containers communicate over an internal bridge network, and all external traffic flows through Traefik as a reverse proxy.</p>
+
+      <div class="space-y-6">
+        <!-- Isolated networks -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-primary mb-3">Isolated Docker Networks</h3>
+          <p class="text-sm text-gray-400 mb-4">Each deployment uses a dedicated bridge network. Containers on different networks cannot communicate. In the SaaS platform, each tenant instance gets its own isolated network.</p>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-primary">networks</span>:
+  <span class="text-primary">content-net</span>:
+    <span class="text-gray-400">driver</span>: <span class="text-green-400">bridge</span>
+    <span class="text-gray-400">internal</span>: <span class="text-accent">false</span>  <span class="text-gray-500"># set to true to block all egress</span></code></pre>
+        </div>
+
+        <!-- Traefik ingress -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-primary mb-3">Traefik as Sole Ingress</h3>
+          <p class="text-sm text-gray-400 mb-4">In production, only Traefik exposes ports to the host. All other services are accessible only through Traefik routes, which provide TLS termination, request routing, and middleware chains.</p>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-primary">traefik</span>:
+  <span class="text-gray-400">image</span>: <span class="text-green-400">traefik:v3.3</span>
+  <span class="text-gray-400">ports</span>:
+    - <span class="text-green-400">"443:443"</span>   <span class="text-gray-500"># HTTPS only in production</span>
+  <span class="text-gray-400">command</span>:
+    - <span class="text-green-400">"--providers.docker=true"</span>
+    - <span class="text-green-400">"--providers.docker.exposedbydefault=false"</span>
+    - <span class="text-green-400">"--entrypoints.websecure.address=:443"</span></code></pre>
+        </div>
+
+        <!-- Rate limiting -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-accent mb-3">Rate Limiting &amp; CORS</h3>
+          <p class="text-sm text-gray-400 mb-4">Traefik middleware enforces per-IP rate limits to prevent brute-force and API abuse. CORS headers restrict which origins can call the API.</p>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm leading-relaxed"><span class="text-primary">labels</span>:
+  <span class="text-gray-500"># Rate limit: 100 requests per second, burst of 200</span>
+  - <span class="text-green-400">"traefik.http.middlewares.ratelimit.ratelimit.average=100"</span>
+  - <span class="text-green-400">"traefik.http.middlewares.ratelimit.ratelimit.burst=200"</span>
+
+  <span class="text-gray-500"># CORS: restrict to dashboard origin</span>
+  - <span class="text-green-400">"traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=https://dashboard.example.com"</span>
+  - <span class="text-green-400">"traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,DELETE"</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Application Security -->
+    <section id="application-security">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-accent/20 text-accent">4</span>
+        Application Security
+      </h2>
+      <p class="text-gray-400 mb-6">The SaaS platform API implements defense-in-depth at the application layer with industry-standard libraries and cryptographic primitives.</p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="font-bold text-sm">JWT Authentication</h3>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">Stateless tokens with 24-hour expiry using the <code class="font-mono bg-bgLight px-1 rounded">jsonwebtoken</code> library. Tokens contain only the user ID and email, no sensitive data.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">jwt.sign(
+  { userId, email },
+  JWT_SECRET,
+  { expiresIn: "24h" }
+)</code></pre>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h3 class="font-bold text-sm">Bcrypt Password Hashing</h3>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">Passwords are hashed with bcrypt using a cost factor of 12. Even if the database is compromised, passwords cannot be reversed.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">const hash = await bcrypt.hash(
+  password, 12
+)</code></pre>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            </div>
+            <h3 class="font-bold text-sm">AES-256-GCM Encryption</h3>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">API keys stored in the database are encrypted at rest with AES-256-GCM. The encryption key is injected via environment variable and never stored in the database or config files.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">encrypt(apiKey, ENCRYPTION_KEY)
+<span class="text-gray-500">// iv:authTag:ciphertext</span></code></pre>
+        </div>
+
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="font-bold text-sm">Zod Validation</h3>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">All API inputs are validated with Zod schemas before processing. Invalid payloads are rejected with structured error messages before they reach any business logic.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+})</code></pre>
+        </div>
+      </div>
+
+      <div class="mt-4 bg-card border border-cardBorder rounded-xl p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-sm">Helmet.js HTTP Headers</h3>
+        </div>
+        <p class="text-xs text-gray-400 mb-3">The Express API uses Helmet.js to set secure HTTP headers. This protects against XSS, clickjacking, MIME sniffing, and other common web vulnerabilities.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">X-Content-Type-Options</div>
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">X-Frame-Options</div>
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">Strict-Transport-Security</div>
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">Content-Security-Policy</div>
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">X-XSS-Protection</div>
+          <div class="bg-bgLight rounded-lg px-3 py-2 font-mono text-gray-400">Referrer-Policy</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. NullClaw-Specific -->
+    <section id="nullclaw-specific">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-primary/20 text-primary">5</span>
+        NullClaw-Specific Security
+      </h2>
+      <p class="text-gray-400 mb-6">NullClaw has its own multi-layer sandbox system that operates independently of Docker isolation. This provides defense-in-depth: even if Docker is misconfigured, NullClaw enforces its own restrictions.</p>
+
+      <div class="space-y-4">
+        <!-- Sandbox -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-primary mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            Built-in Sandbox (Landlock / Bubblewrap / Docker)
+          </h3>
+          <p class="text-sm text-gray-400 mb-4">NullClaw auto-detects the best available sandbox backend. On modern Linux kernels, it uses Landlock LSM for filesystem access control. On older kernels, it falls back to Bubblewrap (bwrap). Inside Docker, it leverages the existing container isolation.</p>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div class="bg-bgLight rounded-lg p-3 text-center">
+              <div class="text-primary font-mono text-sm font-bold mb-1">Landlock</div>
+              <div class="text-xs text-gray-500">Kernel 5.13+ LSM</div>
+            </div>
+            <div class="bg-bgLight rounded-lg p-3 text-center">
+              <div class="text-secondary font-mono text-sm font-bold mb-1">Bubblewrap</div>
+              <div class="text-xs text-gray-500">User-namespace sandbox</div>
+            </div>
+            <div class="bg-bgLight rounded-lg p-3 text-center">
+              <div class="text-accent font-mono text-sm font-bold mb-1">Docker</div>
+              <div class="text-xs text-gray-500">Container-native isolation</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workspace scoping -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-accent mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            Workspace Scoping
+          </h3>
+          <p class="text-sm text-gray-400 mb-3">The <code class="font-mono text-xs bg-bgLight px-1 rounded">sandbox.workspace</code> field restricts all file operations to a single directory. NullClaw cannot read or write outside this path, even if the underlying OS permissions would allow it.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">"sandbox": {
+  "workspace": "/output",
+  "allowed_commands": ["echo", "cat", "ls", "mkdir", "cp"]
+}</code></pre>
+        </div>
+
+        <!-- Command allowlists -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-secondary mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Command Allowlists
+          </h3>
+          <p class="text-sm text-gray-400 mb-3">NullClaw can only execute commands that are explicitly listed in the <code class="font-mono text-xs bg-bgLight px-1 rounded">allowed_commands</code> array. Attempts to run unlisted commands (including shells like <code class="font-mono text-xs bg-bgLight px-1 rounded">bash</code> or <code class="font-mono text-xs bg-bgLight px-1 rounded">sh</code>) are denied.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg px-3 py-1 text-xs font-mono">echo</span>
+            <span class="bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg px-3 py-1 text-xs font-mono">cat</span>
+            <span class="bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg px-3 py-1 text-xs font-mono">ls</span>
+            <span class="bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg px-3 py-1 text-xs font-mono">mkdir</span>
+            <span class="bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg px-3 py-1 text-xs font-mono">cp</span>
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg px-3 py-1 text-xs font-mono line-through">bash</span>
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg px-3 py-1 text-xs font-mono line-through">sh</span>
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg px-3 py-1 text-xs font-mono line-through">rm</span>
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg px-3 py-1 text-xs font-mono line-through">curl</span>
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg px-3 py-1 text-xs font-mono line-through">wget</span>
+          </div>
+        </div>
+
+        <!-- Audit logging -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-primary mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            Audit Logging
+          </h3>
+          <p class="text-sm text-gray-400 mb-3">Every command execution, file access, and API call made by NullClaw is logged. The SaaS platform additionally tracks instance lifecycle events (created, started, stopped) in the <code class="font-mono text-xs bg-bgLight px-1 rounded">usage_logs</code> database table.</p>
+        </div>
+
+        <!-- Gateway pairing -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <h3 class="font-bold text-accent mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            Gateway Pairing
+          </h3>
+          <p class="text-sm text-gray-400 mb-3">For standalone use, NullClaw supports one-time pairing codes that bind a client to a gateway instance. In Docker deployments, pairing is typically disabled because the compose network provides equivalent isolation.</p>
+          <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300">"gateway": {
+  "bind": "0.0.0.0:3000",
+  "pairing": false  <span class="text-gray-500">// network isolation replaces pairing</span>
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Hardening Checklist -->
+    <section id="hardening-checklist">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-green-500/20 text-green-400">6</span>
+        Hardening Checklist
+      </h2>
+      <p class="text-gray-400 mb-6">Verify each item before deploying to production. Items are grouped by layer and ordered by priority.</p>
+
+      <!-- Container Layer -->
+      <div class="mb-8">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-primary mb-4">Container Layer</h3>
+        <div class="bg-card border border-cardBorder rounded-2xl divide-y divide-cardBorder">
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">All containers run as non-root users</div>
+              <div class="text-xs text-gray-500 mt-0.5">Verify with <code class="font-mono bg-bgLight px-1 rounded">docker exec &lt;id&gt; whoami</code></div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Read-only root filesystem enabled</div>
+              <div class="text-xs text-gray-500 mt-0.5"><code class="font-mono bg-bgLight px-1 rounded">read_only: true</code> in compose file</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">no-new-privileges security option set</div>
+              <div class="text-xs text-gray-500 mt-0.5">Prevents privilege escalation via setuid/setgid binaries</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Custom seccomp profile applied</div>
+              <div class="text-xs text-gray-500 mt-0.5">Only whitelisted syscalls are allowed</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Memory and CPU limits configured</div>
+              <div class="text-xs text-gray-500 mt-0.5">Docker <code class="font-mono bg-bgLight px-1 rounded">deploy.resources.limits</code> set for every service</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Network Layer -->
+      <div class="mb-8">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Network Layer</h3>
+        <div class="bg-card border border-cardBorder rounded-2xl divide-y divide-cardBorder">
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Services on isolated bridge networks</div>
+              <div class="text-xs text-gray-500 mt-0.5">No cross-tenant network access possible</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Only Traefik exposes host ports</div>
+              <div class="text-xs text-gray-500 mt-0.5">Internal services have no direct port bindings in production</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">TLS termination at Traefik layer</div>
+              <div class="text-xs text-gray-500 mt-0.5">All external traffic encrypted with HTTPS (Let's Encrypt or custom cert)</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Rate limiting enabled on all API routes</div>
+              <div class="text-xs text-gray-500 mt-0.5">Per-IP throttling to prevent brute-force and abuse</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">CORS restricted to dashboard origin</div>
+              <div class="text-xs text-gray-500 mt-0.5">No wildcard origins allowed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application Layer -->
+      <div class="mb-8">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-accent mb-4">Application Layer</h3>
+        <div class="bg-card border border-cardBorder rounded-2xl divide-y divide-cardBorder">
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">JWT_SECRET set to a strong random value</div>
+              <div class="text-xs text-gray-500 mt-0.5">Not the default dev secret; at least 32 characters of entropy</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">ENCRYPTION_KEY set and secured</div>
+              <div class="text-xs text-gray-500 mt-0.5">32-byte key for AES-256-GCM API key encryption at rest</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Bcrypt cost factor &ge; 12</div>
+              <div class="text-xs text-gray-500 mt-0.5">Higher cost factors increase brute-force resistance</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Zod validation on all request bodies</div>
+              <div class="text-xs text-gray-500 mt-0.5">No unvalidated user input reaches business logic</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Helmet.js middleware enabled</div>
+              <div class="text-xs text-gray-500 mt-0.5">Secure HTTP headers set on all responses</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NullClaw Layer -->
+      <div>
+        <h3 class="text-sm font-bold uppercase tracking-widest text-primary mb-4">NullClaw Layer</h3>
+        <div class="bg-card border border-cardBorder rounded-2xl divide-y divide-cardBorder">
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Sandbox backend configured (Landlock/Bubblewrap)</div>
+              <div class="text-xs text-gray-500 mt-0.5">Set <code class="font-mono bg-bgLight px-1 rounded">sandbox.backend</code> to "auto" or a specific backend</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Workspace scoped to /output only</div>
+              <div class="text-xs text-gray-500 mt-0.5">NullClaw cannot access files outside the designated workspace</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Command allowlist is minimal</div>
+              <div class="text-xs text-gray-500 mt-0.5">No shells (bash, sh) or network tools (curl, wget) in the allowlist</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">API keys injected via environment variables</div>
+              <div class="text-xs text-gray-500 mt-0.5">Keys never appear in config files, images, or logs</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Resource limits set in NullClaw config</div>
+              <div class="text-xs text-gray-500 mt-0.5"><code class="font-mono bg-bgLight px-1 rounded">max_memory_mb</code> and <code class="font-mono bg-bgLight px-1 rounded">max_disk_mb</code> cap agent resource usage</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon"><svg class="w-3 h-3 text-transparent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div>
+            <div>
+              <div class="font-semibold text-sm">Gateway pairing disabled (or properly configured)</div>
+              <div class="text-xs text-gray-500 mt-0.5">In Docker, network isolation replaces pairing codes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-cardBorder px-6 py-12">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-sm text-gray-500">
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/nullclaw/nullclaw" target="_blank" class="hover:text-primary transition-colors">NullClaw GitHub</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://nullclaw.org" target="_blank" class="hover:text-primary transition-colors">nullclaw.org</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://github.com/QuietSentinelShadow/aiceoclone" target="_blank" class="hover:text-primary transition-colors">Source Code</a>
+      </div>
+      <div>Built by <a href="https://github.com/QuietSentinelShadow" target="_blank" class="hover:text-primary transition-colors">AMTOC</a> &middot; NullClaw is an <a href="https://github.com/nullclaw/nullclaw" target="_blank" class="hover:text-primary transition-colors">open-source project</a></div>
+    </div>
+  </footer>
+
+</body>
+</html>
