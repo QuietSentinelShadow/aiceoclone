@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Run NullClaw in Docker — AI CEO Clone</title>
+  <meta name="description" content="Step-by-step guide to running NullClaw AI content creation pipeline in Docker containers. Two-container architecture, quick start, configuration, and troubleshooting." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0f',
+            bgLight: '#141422',
+            primary: '#00e5ff',
+            secondary: '#7c4dff',
+            accent: '#ff6d00',
+            card: '#1e1e2e',
+            cardBorder: '#2d2d44',
+          },
+          fontFamily: {
+            heading: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0f; }
+    .glow-cyan { text-shadow: 0 0 30px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15); }
+    .glow-border { box-shadow: 0 0 20px rgba(0,229,255,0.15), inset 0 0 20px rgba(0,229,255,0.05); }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+    .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+    pre code { display: block; overflow-x: auto; }
+    .step-number {
+      width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; font-weight: 700; font-size: 0.875rem; flex-shrink: 0;
+    }
+    .arrow-right {
+      width: 0; height: 0;
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-left: 18px solid #00e5ff;
+    }
+    .arrow-down {
+      width: 0; height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 18px solid #00e5ff;
+    }
+  </style>
+</head>
+<body class="font-heading text-white antialiased">
+
+  <!-- Back link -->
+  <nav class="px-6 py-4 max-w-5xl mx-auto">
+    <a href="../" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-primary transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Back to AI CEO Clone
+    </a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="relative px-6 pt-16 pb-24 overflow-hidden">
+    <div class="absolute top-10 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl pulse-glow"></div>
+    <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pulse-glow" style="animation-delay: 1.5s"></div>
+    <div class="relative z-10 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-card/80 border border-cardBorder rounded-full px-4 py-2 mb-6 text-sm text-gray-400 backdrop-blur">
+        <span class="w-2 h-2 bg-primary rounded-full pulse-glow"></span>
+        Docker Guide
+      </div>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6">
+        <span class="text-white">Run NullClaw in</span><br />
+        <span class="glow-cyan text-primary">Docker</span>
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+        Spin up the NullClaw content-creation pipeline with a single <code class="font-mono text-primary bg-card px-2 py-0.5 rounded text-sm">docker compose up</code>. Two containers, zero fuss.
+      </p>
+    </div>
+  </section>
+
+  <!-- Table of Contents -->
+  <nav class="px-6 max-w-4xl mx-auto mb-16">
+    <div class="bg-card border border-cardBorder rounded-2xl p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-4">On This Page</h2>
+      <ol class="grid sm:grid-cols-2 gap-2 text-sm">
+        <li><a href="#prerequisites" class="text-gray-400 hover:text-primary transition-colors">1. Prerequisites</a></li>
+        <li><a href="#architecture" class="text-gray-400 hover:text-primary transition-colors">2. Architecture</a></li>
+        <li><a href="#quick-start" class="text-gray-400 hover:text-primary transition-colors">3. Quick Start</a></li>
+        <li><a href="#configuration" class="text-gray-400 hover:text-primary transition-colors">4. Configuration</a></li>
+        <li><a href="#content-generation" class="text-gray-400 hover:text-primary transition-colors">5. Content Generation</a></li>
+        <li><a href="#video-rendering" class="text-gray-400 hover:text-primary transition-colors">6. Video Rendering</a></li>
+        <li><a href="#troubleshooting" class="text-gray-400 hover:text-primary transition-colors">7. Troubleshooting</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="px-6 max-w-4xl mx-auto space-y-20 pb-20">
+
+    <!-- 1. Prerequisites -->
+    <section id="prerequisites">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-primary/20 text-primary">1</span>
+        Prerequisites
+      </h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.187.187 0 00-.187.186v1.887c0 .103.084.185.187.185zm-2.954-5.43h2.118a.186.186 0 00.187-.185V3.574a.186.186 0 00-.187-.185h-2.118a.187.187 0 00-.187.185v1.888c0 .103.083.185.187.185zm0 2.716h2.118a.187.187 0 00.187-.186V6.29a.186.186 0 00-.187-.186h-2.118a.187.187 0 00-.187.186v1.887c0 .103.083.186.187.186zm-2.93 0h2.12a.186.186 0 00.186-.186V6.29a.186.186 0 00-.186-.186H8.1a.187.187 0 00-.188.186v1.887c0 .103.084.186.187.186zm-2.964 0h2.119a.186.186 0 00.187-.186V6.29a.186.186 0 00-.187-.186H5.136a.186.186 0 00-.186.186v1.887c0 .103.083.186.186.186zm5.893 2.715h2.118a.186.186 0 00.187-.185V9.006a.186.186 0 00-.187-.186h-2.118a.187.187 0 00-.187.186v1.887c0 .103.083.185.187.185zm-2.93 0h2.12a.185.185 0 00.186-.185V9.006a.185.185 0 00-.186-.186h-2.12a.187.187 0 00-.186.186v1.887c0 .103.083.185.186.185zm-2.964 0h2.119a.186.186 0 00.187-.185V9.006a.186.186 0 00-.187-.186H5.136a.186.186 0 00-.186.186v1.887c0 .103.083.185.186.185zm-2.92 0h2.12a.185.185 0 00.186-.185V9.006a.185.185 0 00-.186-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .103.084.185.186.185zM23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.089-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288z"/></svg>
+            <div>
+              <h3 class="font-bold">Docker Engine</h3>
+              <p class="text-sm text-gray-400">v24+ with Compose V2</p>
+            </div>
+          </div>
+          <div class="bg-bgLight rounded-lg p-3 font-mono text-sm text-gray-300 overflow-x-auto">
+            docker --version && docker compose version
+          </div>
+        </div>
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            <div>
+              <h3 class="font-bold">AI Provider API Key</h3>
+              <p class="text-sm text-gray-400">OpenRouter, Anthropic, or OpenAI</p>
+            </div>
+          </div>
+          <div class="bg-bgLight rounded-lg p-3 font-mono text-sm text-gray-300 overflow-x-auto">
+            OPENROUTER_API_KEY=sk-or-v1-...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Architecture -->
+    <section id="architecture">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-secondary/20 text-secondary">2</span>
+        Architecture
+      </h2>
+      <p class="text-gray-400 mb-8">The stack uses a two-container design. NullClaw handles AI interactions through its gateway API, while the content pipeline renders final assets from the generated material.</p>
+
+      <!-- Architecture Diagram -->
+      <div class="bg-card border border-cardBorder rounded-2xl p-6 sm:p-8 mb-6">
+        <div class="flex flex-col lg:flex-row items-center gap-6 lg:gap-4">
+          <!-- Host / User -->
+          <div class="bg-bgLight border-2 border-dashed border-gray-600 rounded-xl p-4 text-center min-w-[140px]">
+            <div class="text-2xl mb-1">&#128187;</div>
+            <div class="font-bold text-sm">Host Machine</div>
+            <div class="text-xs text-gray-500 mt-1">curl / generate-content.sh</div>
+          </div>
+
+          <!-- Arrow -->
+          <div class="hidden lg:block"><div class="arrow-right"></div></div>
+          <div class="lg:hidden"><div class="arrow-down"></div></div>
+
+          <!-- Docker Network -->
+          <div class="flex-1 w-full border-2 border-primary/30 rounded-2xl p-4 sm:p-6 relative">
+            <div class="absolute -top-3 left-4 bg-bg px-2 text-xs text-primary font-mono">content-net (bridge)</div>
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              <!-- NullClaw Container -->
+              <div class="flex-1 w-full bg-bgLight border border-primary/40 rounded-xl p-4 glow-border">
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span class="font-mono text-xs text-gray-400">nullclaw-content</span>
+                </div>
+                <div class="font-bold text-primary mb-1">NullClaw Gateway</div>
+                <div class="text-xs text-gray-400 space-y-1">
+                  <div>Port <span class="text-primary font-mono">3000</span></div>
+                  <div>Memory: <span class="font-mono">256 MB</span></div>
+                  <div>CPU: <span class="font-mono">0.5</span> cores</div>
+                  <div class="text-green-400 font-mono text-[10px] mt-2">/health &bull; /v1/chat/completions</div>
+                </div>
+              </div>
+
+              <!-- Arrow between containers -->
+              <div class="hidden sm:block"><div class="arrow-right"></div></div>
+              <div class="sm:hidden"><div class="arrow-down"></div></div>
+
+              <!-- Pipeline Container -->
+              <div class="flex-1 w-full bg-bgLight border border-secondary/40 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                  <span class="font-mono text-xs text-gray-400">content-pipeline</span>
+                </div>
+                <div class="font-bold text-secondary mb-1">Content Pipeline</div>
+                <div class="text-xs text-gray-400 space-y-1">
+                  <div>Profile: <span class="font-mono text-secondary">render</span></div>
+                  <div>Memory: <span class="font-mono">2 GB</span></div>
+                  <div>CPU: <span class="font-mono">2.0</span> cores</div>
+                  <div class="text-yellow-400 font-mono text-[10px] mt-2">Node.js + Remotion + FFmpeg</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shared Volume -->
+            <div class="mt-4 pt-4 border-t border-cardBorder flex items-center justify-center gap-3">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+              <div class="text-sm">
+                <span class="font-mono text-accent">shared-output</span>
+                <span class="text-gray-500"> — mounted at /output in both containers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 text-sm">
+        <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+          <h4 class="font-bold text-primary mb-2">NullClaw Gateway</h4>
+          <p class="text-gray-400">Runs the 678 KB NullClaw binary in gateway mode. Exposes an OpenAI-compatible API on port 3000. Read-only filesystem with a 64 MB tmpfs scratch space. Health-checked every 30 seconds.</p>
+        </div>
+        <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+          <h4 class="font-bold text-secondary mb-2">Content Pipeline</h4>
+          <p class="text-gray-400">Node.js container with Remotion, Edge-TTS, FFmpeg, and Chromium. Only starts when the <code class="font-mono text-xs bg-bgLight px-1 rounded">render</code> profile is active. Waits for NullClaw to pass its health check before launching.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Quick Start -->
+    <section id="quick-start">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-primary/20 text-primary">3</span>
+        Quick Start
+      </h2>
+
+      <div class="space-y-4">
+        <!-- Step 1 -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="step-number bg-primary text-bg text-xs">a</span>
+            <h3 class="font-bold">Clone and enter the docker directory</h3>
+          </div>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">git clone https://github.com/QuietSentinelShadow/aiceoclone.git
+cd aiceoclone/docker</code></pre>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="step-number bg-primary text-bg text-xs">b</span>
+            <h3 class="font-bold">Create your environment file</h3>
+          </div>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">cp .env.example .env</code></pre>
+          <p class="text-sm text-gray-400 mt-3">Open <code class="font-mono text-primary bg-bgLight px-1.5 py-0.5 rounded">.env</code> and set your API key:</p>
+          <pre class="bg-bgLight rounded-lg p-4 mt-2 overflow-x-auto"><code class="font-mono text-sm"><span class="text-gray-500"># .env</span>
+<span class="text-accent">OPENROUTER_API_KEY</span>=<span class="text-primary">sk-or-v1-your-actual-key-here</span>
+
+<span class="text-gray-500"># Or use a different provider:</span>
+<span class="text-gray-500"># ANTHROPIC_API_KEY=sk-ant-your-key-here</span>
+<span class="text-gray-500"># OPENAI_API_KEY=sk-your-key-here</span></code></pre>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="step-number bg-primary text-bg text-xs">c</span>
+            <h3 class="font-bold">Start the NullClaw gateway</h3>
+          </div>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">docker compose up -d</code></pre>
+          <p class="text-sm text-gray-400 mt-3">This builds the NullClaw image (pulls the 678 KB binary) and starts the gateway container. The pipeline container does <strong>not</strong> start yet because it is behind the <code class="font-mono text-xs bg-bgLight px-1 rounded">render</code> profile.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="bg-card border border-cardBorder rounded-xl p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="step-number bg-primary text-bg text-xs">d</span>
+            <h3 class="font-bold">Verify the health endpoint</h3>
+          </div>
+          <pre class="bg-bgLight rounded-lg p-4 overflow-x-auto"><code class="font-mono text-sm text-gray-300">curl http://localhost:3000/health</code></pre>
+          <p class="text-sm text-gray-400 mt-3">Expected response:</p>
+          <pre class="bg-bgLight rounded-lg p-4 mt-2 overflow-x-auto"><code class="font-mono text-sm text-green-400">{"status":"ok","version":"2026.3.3","uptime":12}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Configuration -->
+    <section id="configuration">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-accent/20 text-accent">4</span>
+        Configuration
+      </h2>
+      <p class="text-gray-400 mb-6">NullClaw reads its configuration from <code class="font-mono text-primary bg-card px-2 py-0.5 rounded text-sm">configs/content-creator.json</code>, which is copied into the container at build time.</p>
+
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">configs/content-creator.json</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm leading-relaxed">{
+  <span class="text-primary">"providers"</span>: {
+    <span class="text-primary">"default"</span>: {
+      <span class="text-gray-400">"name"</span>: <span class="text-green-400">"openrouter"</span>,
+      <span class="text-gray-400">"api_key_env"</span>: <span class="text-green-400">"OPENROUTER_API_KEY"</span>,
+      <span class="text-gray-400">"model"</span>: <span class="text-green-400">"google/gemini-2.5-flash"</span>
+    }
+  },
+  <span class="text-primary">"memory"</span>: {
+    <span class="text-gray-400">"backend"</span>: <span class="text-green-400">"sqlite"</span>,
+    <span class="text-gray-400">"path"</span>: <span class="text-green-400">"/home/nullclaw/.nullclaw/memory.db"</span>,
+    <span class="text-gray-400">"search"</span>: <span class="text-green-400">"hybrid"</span>
+  },
+  <span class="text-primary">"autonomy"</span>: {
+    <span class="text-gray-400">"level"</span>: <span class="text-green-400">"full"</span>,
+    <span class="text-gray-400">"confirm_dangerous"</span>: <span class="text-accent">true</span>
+  },
+  <span class="text-primary">"sandbox"</span>: {
+    <span class="text-gray-400">"backend"</span>: <span class="text-green-400">"auto"</span>,
+    <span class="text-gray-400">"workspace"</span>: <span class="text-green-400">"/output"</span>,
+    <span class="text-gray-400">"allowed_commands"</span>: [<span class="text-green-400">"echo"</span>, <span class="text-green-400">"cat"</span>, <span class="text-green-400">"ls"</span>, <span class="text-green-400">"mkdir"</span>, <span class="text-green-400">"cp"</span>]
+  },
+  <span class="text-primary">"gateway"</span>: {
+    <span class="text-gray-400">"bind"</span>: <span class="text-green-400">"0.0.0.0:3000"</span>,
+    <span class="text-gray-400">"pairing"</span>: <span class="text-accent">false</span>
+  },
+  <span class="text-primary">"resources"</span>: {
+    <span class="text-gray-400">"max_memory_mb"</span>: <span class="text-accent">256</span>,
+    <span class="text-gray-400">"max_disk_mb"</span>: <span class="text-accent">512</span>
+  }
+}</code></pre>
+      </div>
+
+      <div class="mt-6 space-y-4">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-primary mb-2">providers</h4>
+            <p class="text-xs text-gray-400">Configures the AI backend. The <code class="font-mono bg-bgLight px-1 rounded">api_key_env</code> field tells NullClaw which environment variable holds your key, so the key never appears in the config file.</p>
+          </div>
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-primary mb-2">memory</h4>
+            <p class="text-xs text-gray-400">SQLite-backed conversation memory with hybrid (keyword + semantic) search. The database lives on the <code class="font-mono bg-bgLight px-1 rounded">nullclaw-data</code> volume so it persists across container restarts.</p>
+          </div>
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-accent mb-2">autonomy</h4>
+            <p class="text-xs text-gray-400">Set to <code class="font-mono bg-bgLight px-1 rounded">full</code> so NullClaw can generate content without interactive confirmation. The <code class="font-mono bg-bgLight px-1 rounded">confirm_dangerous</code> flag still gates destructive operations.</p>
+          </div>
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-secondary mb-2">sandbox</h4>
+            <p class="text-xs text-gray-400">Auto-selects the best sandbox backend (Landlock on Linux, Bubblewrap fallback). Only the five listed commands are allowed. All file output is scoped to <code class="font-mono bg-bgLight px-1 rounded">/output</code>.</p>
+          </div>
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-primary mb-2">gateway</h4>
+            <p class="text-xs text-gray-400">Binds the HTTP API to all interfaces on port 3000. Pairing is disabled for container use (the compose network provides isolation).</p>
+          </div>
+          <div class="bg-card/60 border border-cardBorder rounded-xl p-4">
+            <h4 class="font-bold text-sm text-accent mb-2">resources</h4>
+            <p class="text-xs text-gray-400">NullClaw-level resource caps (separate from Docker's own <code class="font-mono bg-bgLight px-1 rounded">deploy.resources.limits</code>). Prevents runaway allocations inside the sandbox.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Content Generation -->
+    <section id="content-generation">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-primary/20 text-primary">5</span>
+        Content Generation
+      </h2>
+      <p class="text-gray-400 mb-6">The <code class="font-mono text-primary bg-card px-2 py-0.5 rounded text-sm">scripts/generate-content.sh</code> script orchestrates AI content creation through the NullClaw gateway.</p>
+
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-6">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">Run the generator</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm text-gray-300">cd docker
+bash scripts/generate-content.sh</code></pre>
+      </div>
+
+      <h3 class="text-lg font-bold mb-4">What happens step by step</h3>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3 bg-card/60 border border-cardBorder rounded-xl p-4">
+          <span class="step-number bg-primary/20 text-primary text-xs mt-0.5">1</span>
+          <div>
+            <h4 class="font-bold text-sm">Wait for gateway</h4>
+            <p class="text-xs text-gray-400">Polls <code class="font-mono bg-bgLight px-1 rounded">/health</code> every second for up to 30 seconds until NullClaw responds.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-card/60 border border-cardBorder rounded-xl p-4">
+          <span class="step-number bg-primary/20 text-primary text-xs mt-0.5">2</span>
+          <div>
+            <h4 class="font-bold text-sm">Generate blog content</h4>
+            <p class="text-xs text-gray-400">Sends <code class="font-mono bg-bgLight px-1 rounded">configs/blog-prompt.md</code> to the chat completions API. Saves the result to <code class="font-mono bg-bgLight px-1 rounded">output/blog/generated-article.md</code>.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-card/60 border border-cardBorder rounded-xl p-4">
+          <span class="step-number bg-primary/20 text-primary text-xs mt-0.5">3</span>
+          <div>
+            <h4 class="font-bold text-sm">Generate video script</h4>
+            <p class="text-xs text-gray-400">Sends <code class="font-mono bg-bgLight px-1 rounded">configs/video-script-prompt.md</code> to the API. Saves the narration JSON to <code class="font-mono bg-bgLight px-1 rounded">output/scripts/narration.json</code>.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-card/60 border border-cardBorder rounded-xl p-4">
+          <span class="step-number bg-green-400/20 text-green-400 text-xs mt-0.5">4</span>
+          <div>
+            <h4 class="font-bold text-sm">Done</h4>
+            <p class="text-xs text-gray-400">Output directory structure is ready for the pipeline renderer.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-card border border-cardBorder rounded-xl p-5">
+        <h4 class="font-bold text-sm mb-3">Output directory structure</h4>
+        <pre class="font-mono text-sm text-gray-400 leading-relaxed"><code>output/
+  blog/
+    generated-article.md
+  scripts/
+    narration.json
+  audio/         <span class="text-gray-600"># populated by pipeline</span>
+  video/         <span class="text-gray-600"># populated by pipeline</span></code></pre>
+      </div>
+    </section>
+
+    <!-- 6. Video Rendering -->
+    <section id="video-rendering">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-secondary/20 text-secondary">6</span>
+        Video Rendering
+      </h2>
+      <p class="text-gray-400 mb-6">Once content is generated, activate the render profile to launch the pipeline container. It reads from the shared volume, synthesizes audio with Edge-TTS, and renders video with Remotion + FFmpeg.</p>
+
+      <div class="bg-card border border-cardBorder rounded-2xl overflow-hidden mb-6">
+        <div class="border-b border-cardBorder px-5 py-3 flex items-center gap-2">
+          <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="ml-2 font-mono text-xs text-gray-500">Start the renderer</span>
+        </div>
+        <pre class="p-5 overflow-x-auto"><code class="font-mono text-sm text-gray-300">docker compose --profile render up pipeline</code></pre>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-4 text-sm">
+        <div class="bg-card/60 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-3xl mb-2">&#127908;</div>
+          <h4 class="font-bold mb-1">Edge-TTS</h4>
+          <p class="text-xs text-gray-400">Converts narration JSON to MP3 audio files using Microsoft Edge neural voices.</p>
+        </div>
+        <div class="bg-card/60 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-3xl mb-2">&#127916;</div>
+          <h4 class="font-bold mb-1">Remotion</h4>
+          <p class="text-xs text-gray-400">React-based video framework renders animated scenes from the script data in headless Chromium.</p>
+        </div>
+        <div class="bg-card/60 border border-cardBorder rounded-xl p-4 text-center">
+          <div class="text-3xl mb-2">&#127909;</div>
+          <h4 class="font-bold mb-1">FFmpeg</h4>
+          <p class="text-xs text-gray-400">Composites audio and video tracks into the final MP4, handling encoding and muxing.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-card border border-primary/20 rounded-xl p-5">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Resource note</h4>
+            <p class="text-xs text-gray-400">The pipeline container is allocated 2 GB RAM and 2 CPU cores. Video rendering with Chromium is memory-intensive. If your machine has limited resources, render one video at a time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Troubleshooting -->
+    <section id="troubleshooting">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="step-number bg-accent/20 text-accent">7</span>
+        Troubleshooting
+      </h2>
+
+      <div class="space-y-4">
+        <!-- Issue 1 -->
+        <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+          <div class="px-5 py-3 border-b border-cardBorder flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="font-bold text-sm">API key not set or invalid</h3>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-sm text-gray-400 mb-3"><strong class="text-gray-300">Symptom:</strong> NullClaw starts but content generation returns empty or error responses.</p>
+            <p class="text-sm text-gray-400 mb-2"><strong class="text-gray-300">Fix:</strong></p>
+            <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300"><span class="text-gray-500"># Check the container's env</span>
+docker compose exec nullclaw env | grep API_KEY
+
+<span class="text-gray-500"># Make sure .env has the right variable name</span>
+cat .env</code></pre>
+          </div>
+        </div>
+
+        <!-- Issue 2 -->
+        <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+          <div class="px-5 py-3 border-b border-cardBorder flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="font-bold text-sm">Container won't start or exits immediately</h3>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-sm text-gray-400 mb-3"><strong class="text-gray-300">Symptom:</strong> <code class="font-mono bg-bgLight px-1 rounded text-xs">docker compose ps</code> shows the container as <code class="font-mono bg-bgLight px-1 rounded text-xs">exited</code> or restarting.</p>
+            <p class="text-sm text-gray-400 mb-2"><strong class="text-gray-300">Fix:</strong></p>
+            <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300"><span class="text-gray-500"># Check logs for the crash reason</span>
+docker compose logs nullclaw --tail 50
+
+<span class="text-gray-500"># Rebuild if the image is stale</span>
+docker compose build --no-cache nullclaw
+docker compose up -d</code></pre>
+          </div>
+        </div>
+
+        <!-- Issue 3 -->
+        <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+          <div class="px-5 py-3 border-b border-cardBorder flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="font-bold text-sm">Out of memory during rendering</h3>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-sm text-gray-400 mb-3"><strong class="text-gray-300">Symptom:</strong> The pipeline container is killed by the OOM killer, or Chromium crashes during Remotion renders.</p>
+            <p class="text-sm text-gray-400 mb-2"><strong class="text-gray-300">Fix:</strong></p>
+            <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300"><span class="text-gray-500"># Increase the pipeline memory limit in docker-compose.yml</span>
+deploy:
+  resources:
+    limits:
+      memory: 4G  <span class="text-gray-500"># was 2G</span>
+
+<span class="text-gray-500"># Or reduce concurrency in Remotion by setting env var</span>
+environment:
+  - REMOTION_CONCURRENCY=1</code></pre>
+          </div>
+        </div>
+
+        <!-- Issue 4 -->
+        <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+          <div class="px-5 py-3 border-b border-cardBorder flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="font-bold text-sm">Port 3000 already in use</h3>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-sm text-gray-400 mb-3"><strong class="text-gray-300">Symptom:</strong> Docker reports a port binding conflict on startup.</p>
+            <p class="text-sm text-gray-400 mb-2"><strong class="text-gray-300">Fix:</strong></p>
+            <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300"><span class="text-gray-500"># Change the host port in docker-compose.yml</span>
+ports:
+  - "3001:3000"  <span class="text-gray-500"># map to a free host port</span>
+
+<span class="text-gray-500"># Update the gateway URL for the generator script</span>
+NULLCLAW_URL=http://localhost:3001 bash scripts/generate-content.sh</code></pre>
+          </div>
+        </div>
+
+        <!-- Issue 5 -->
+        <div class="bg-card border border-cardBorder rounded-xl overflow-hidden">
+          <div class="px-5 py-3 border-b border-cardBorder flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="font-bold text-sm">Health check keeps failing</h3>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-sm text-gray-400 mb-3"><strong class="text-gray-300">Symptom:</strong> Container shows <code class="font-mono bg-bgLight px-1 rounded text-xs">(unhealthy)</code> and the pipeline refuses to start.</p>
+            <p class="text-sm text-gray-400 mb-2"><strong class="text-gray-300">Fix:</strong></p>
+            <pre class="bg-bgLight rounded-lg p-3 overflow-x-auto"><code class="font-mono text-xs text-gray-300"><span class="text-gray-500"># Check what NullClaw is actually listening on</span>
+docker compose exec nullclaw wget -qO- http://127.0.0.1:3000/health
+
+<span class="text-gray-500"># Ensure the gateway bind address matches the healthcheck</span>
+<span class="text-gray-500"># In content-creator.json: "bind": "0.0.0.0:3000"</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-cardBorder px-6 py-12">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-sm text-gray-500">
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/nullclaw/nullclaw" target="_blank" class="hover:text-primary transition-colors">NullClaw GitHub</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://nullclaw.org" target="_blank" class="hover:text-primary transition-colors">nullclaw.org</a>
+        <span class="text-cardBorder">&middot;</span>
+        <a href="https://github.com/QuietSentinelShadow/aiceoclone" target="_blank" class="hover:text-primary transition-colors">Source Code</a>
+      </div>
+      <div>Built by <a href="https://github.com/QuietSentinelShadow" target="_blank" class="hover:text-primary transition-colors">AMTOC</a> &middot; NullClaw is an <a href="https://github.com/nullclaw/nullclaw" target="_blank" class="hover:text-primary transition-colors">open-source project</a></div>
+    </div>
+  </footer>
+
+</body>
+</html>
