@@ -1,0 +1,14 @@
+FROM ghcr.io/homebrew/core/nullclaw:2026.3.3 AS nullclaw-bin
+
+FROM alpine:3.21
+RUN addgroup -g 1000 nullclaw && adduser -u 1000 -G nullclaw -D nullclaw
+RUN mkdir -p /home/nullclaw/.nullclaw /output /tmp/nullclaw \
+    && chown -R nullclaw:nullclaw /home/nullclaw /output /tmp/nullclaw
+COPY --from=nullclaw-bin /usr/bin/nullclaw /usr/bin/nullclaw
+COPY configs/content-creator.json /home/nullclaw/.nullclaw/config.json
+USER nullclaw
+WORKDIR /home/nullclaw
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1:3000/health || exit 1
+CMD ["nullclaw", "--gateway"]

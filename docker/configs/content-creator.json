@@ -1,0 +1,32 @@
+{
+  "providers": {
+    "default": {
+      "name": "openrouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "google/gemini-2.5-flash"
+    }
+  },
+  "channels": {},
+  "memory": {
+    "backend": "sqlite",
+    "path": "/home/nullclaw/.nullclaw/memory.db",
+    "search": "hybrid"
+  },
+  "autonomy": {
+    "level": "full",
+    "confirm_dangerous": true
+  },
+  "sandbox": {
+    "backend": "auto",
+    "workspace": "/output",
+    "allowed_commands": ["echo", "cat", "ls", "mkdir", "cp"]
+  },
+  "gateway": {
+    "bind": "0.0.0.0:3000",
+    "pairing": false
+  },
+  "resources": {
+    "max_memory_mb": 256,
+    "max_disk_mb": 512
+  }
+}
