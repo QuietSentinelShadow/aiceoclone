@@ -1,0 +1,23 @@
+FROM node:22-bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv ffmpeg chromium curl \
+    && python3 -m venv /opt/tts-venv \
+    && /opt/tts-venv/bin/pip install edge-tts \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PATH="/opt/tts-venv/bin:$PATH"
+
+RUN groupadd -g 1000 pipeline && useradd -u 1000 -g pipeline -m pipeline
+RUN mkdir -p /app /output /tmp/pipeline \
+    && chown -R pipeline:pipeline /app /output /tmp/pipeline
+
+WORKDIR /app
+COPY --chown=pipeline:pipeline package.json package-lock.json ./
+RUN npm ci --production
+COPY --chown=pipeline:pipeline . .
+
+USER pipeline
+VOLUME ["/output"]
+CMD ["node", "scripts/render-all.mjs"]
